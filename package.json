@@ -1,17 +1,27 @@
 {
+<<<<<<< Updated upstream
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
+=======
+  "name": "accommodation_system-1",
+  "version": "0.1.0",
+  "private": true,
+>>>>>>> Stashed changes
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+<<<<<<< Updated upstream
     "lint": "eslint .",
+=======
+>>>>>>> Stashed changes
     "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+<<<<<<< Updated upstream
     "@mui/material": "^7.3.4",
     "axios": "^1.13.1",
     "react": "^19.1.1",
@@ -29,5 +39,16 @@
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
     "vite": "^7.1.7"
+=======
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.3.1"
+>>>>>>> Stashed changes
   }
 }
