@@ -1,28 +1,32 @@
-// App.jsx (Файл у корені, зі скоригованими шляхами до src/components)
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ApplicationForm from "./src/components/ApplicationForm"; 
-import ConfirmationPage from "./src/components/ConfirmationPage"; 
-import StatusPage from "./src/components/StatusPage"; 
-// import ApplicationsList from "./src/components/ApplicationsList"; // ВИДАЛЕНО
+import ConfirmationPage from "./src/pages/ConfirmationPage"; 
+import StatusPage from "./src/pages/StatusPage"; 
+import ApplicationsList from "./src/components/ApplicationsList";
 import { CssBaseline, Box, Typography, Button } from "@mui/material";
 
 function App() {
     // Початковий стан: 'form'
-    const [currentPage, setCurrentPage] = useState('form'); 
-    
-    // Ми більше не потребуємо currentApplicationId, оскільки StatusPage використовує заглушки
-
-    // --- Функції переходу ---
+    const [currentPage, setCurrentPage] = useState('list');
+    const [currentReservationId, setCurrentReservationId] = useState(null);
     
     // 1. З форми до підтвердження 
-    const handleFormSubmit = () => {
+    const handleFormSubmit = (reservationId) => {
+        setCurrentReservationId(reservationId);
         setCurrentPage('confirmation');
     };
 
     // 2. З підтвердження до статусу
-    const handleViewStatus = () => {
+    const handleViewStatus = (reservationId) => {
+        if (reservationId && (typeof reservationId === 'number' || typeof reservationId === 'string')) 
+        {
+            setCurrentReservationId(reservationId);
+        }
         setCurrentPage('status');
+    };
+
+    const handleNewApplication = () => {
+        setCurrentPage('form');
     };
 
     let PageContent;
@@ -35,10 +39,15 @@ function App() {
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
             break;
         case 'status':
-            PageContent = <StatusPage />;
+            PageContent = <StatusPage reservationId={currentReservationId} />;
+            break;
+        case 'list':
+            PageContent = <ApplicationsList 
+                            onNewApplication={handleNewApplication} 
+                            onStatusView={handleViewStatus} 
+                        />;
             break;
         default:
-            // Якщо щось піде не так, показуємо форму
             PageContent = <ApplicationForm onSuccess={handleFormSubmit} />;
     }
 

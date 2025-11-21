@@ -1,10 +1,23 @@
-import React from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import { Container, Grid, Typography, TextField, Button, Box, Paper } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person'; // Використовуємо іконку для стилізації
+import PersonIcon from '@mui/icons-material/Person';
 
-// Компонент форми приймає пропс onSuccess
 const ApplicationForm = ({ onSuccess }) => { 
-    // Стилі для імітації сірого поля, як на зображенні
+    const [room, setRoom] = useState('');
+    const [place, setPlace] = useState('');
+    const [reason, setReason] = useState('');
+    const [checkInDate, setCheckInDate] = useState('');
+    const [checkOutDate, setCheckOutDate] = useState('');
+
+    const dateToISO = (dateString) => {
+        if (!dateString) return null;
+        
+        const date = new Date(dateString + 'T00:00:00.000Z');
+        
+        return date.toISOString();
+    };
+
     const inputStyle = {
         '& .MuiInputBase-root': {
             borderRadius: '8px',
@@ -16,12 +29,37 @@ const ApplicationForm = ({ onSuccess }) => {
         marginBottom: 2, // Відступ знизу для кожного поля
     };
     
-    // Функція, яка імітує відправку форми та перемикає сторінку
-    const handleSubmit = () => {
-        // У реальному додатку тут була б логіка валідації та API-запиту.
-        // Ми просто викликаємо функцію для перемикання сторінки.
-        if (onSuccess) {
-            onSuccess();
+    const handleSubmit = async (e) => {
+        const postData = {
+            userId: 4,
+            roomId: room,
+            bedId: place,
+            reservationReason: reason,
+            reservationStartDate: dateToISO(checkInDate),
+            reservationEndDate: dateToISO(checkOutDate)
+        };
+
+        var newReservationId = null
+
+        try {
+            const response = await axios.post('https://localhost:7193/api/reservations', postData);
+
+            newReservationId = response.data.reservationId;
+
+        } catch (error) {
+            console.log(`Помилка під час надсилання: ${error.message}`);
+        }
+
+        setRoom('');
+        setReason('');
+        setPlace('');
+        setCheckInDate('');
+        setCheckOutDate('');
+
+        if (newReservationId) {
+            onSuccess(newReservationId); 
+        } else {
+            console.error("Помилка: Не вдалося отримати reservationId з відповіді.");
         }
     };
 
@@ -33,37 +71,21 @@ const ApplicationForm = ({ onSuccess }) => {
                     Подача заявки
                 </Typography>
 
-                <Grid container spacing={4}>
+                <Grid container spacing={4} columns={{ xs: 2 }}>
                     {/* Ліва колонка */}
-                    <Grid item xs={12} sm={6}>
-                        {/* ПІБ */}
-                        <Typography variant="subtitle1" fontWeight="bold">ПІБ</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Введіть ПІБ"
-                            size="small"
-                            sx={inputStyle}
-                        />
+                    <Grid size={{ xs: 1 }}>
+                        {/* Період поселення */}
+                        <Typography variant="subtitle1" fontWeight="bold">Дата заселення</Typography>
 
-                        {/* Номер телефону */}
-                        <Typography variant="subtitle1" fontWeight="bold">Номер телефону</Typography>
                         <TextField
                             fullWidth
                             variant="outlined"
-                            placeholder="Введіть номер"
+                            placeholder="Дата заселення"
                             size="small"
+                            type="date"
                             sx={inputStyle}
-                        />
-
-                        {/* email */}
-                        <Typography variant="subtitle1" fontWeight="bold">email</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Введіть email"
-                            size="small"
-                            sx={inputStyle}
+                            value={checkInDate}
+                            onChange={(e) => setCheckInDate(e.target.value)}
                         />
 
                         {/* Обрати кімнату */}
@@ -74,8 +96,56 @@ const ApplicationForm = ({ onSuccess }) => {
                             placeholder="№ кімнати"
                             size="small"
                             sx={inputStyle}
+                            value={room}
+                            onChange={(e) => setRoom(e.target.value)}
                         />
 
+                        {/* Причина бронювання */}
+                        <Typography variant="subtitle1" fontWeight="bold">Причина бронювання</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            sx={inputStyle}
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                        />
+                    </Grid>
+
+                    {/* Права колонка */}
+                    <Grid size={{ xs: 1 }}>
+
+                        {/* Період поселення */}
+                        <Typography variant="subtitle1" fontWeight="bold">Дата виселення</Typography>
+
+                        {/* Дата виселення */}
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            placeholder="Дата виселення"
+                            size="small"
+                            type ="date"
+                            sx={inputStyle}
+                            value={checkOutDate}
+                            onChange={(e) => setCheckOutDate(e.target.value)}
+                        />
+
+                        {/* Обрати місце */}
+                        <Typography variant="subtitle1" fontWeight="bold">Обрати місце</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            placeholder="№ місця"
+                            size="small"
+                            sx={inputStyle}
+                            value={place}
+                            onChange={(e) => setPlace(e.target.value)}
+                        />
+                    </Grid>
+                </Grid>
+
+                <Grid container spacing={4} columns={{ xs: 2 }}>
+                    <Grid size={{ xs: 1 }}>
                         {/* Адреса гуртожитку та кнопка */}
                         <Box sx={{ mt: 3 }}>
                             <Typography variant="body2" sx={{ color: '#8b0000', mb: 1 }}>
@@ -101,46 +171,7 @@ const ApplicationForm = ({ onSuccess }) => {
                         </Box>
                     </Grid>
 
-                    {/* Права колонка */}
-                    <Grid item xs={12} sm={6}>
-                        {/* Причини бронювання */}
-                        <Typography variant="subtitle1" fontWeight="bold">Причини бронювання</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            size="small"
-                            sx={inputStyle}
-                        />
-
-                        {/* Період поселення */}
-                        <Typography variant="subtitle1" fontWeight="bold">Період поселення</Typography>
-                        {/* Дата заселення */}
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Дата заселення"
-                            size="small"
-                            sx={inputStyle}
-                        />
-                        {/* Дата виселення */}
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="Дата виселення"
-                            size="small"
-                            sx={inputStyle}
-                        />
-
-                        {/* Обрати місце */}
-                        <Typography variant="subtitle1" fontWeight="bold">Обрати місце</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="№ місця"
-                            size="small"
-                            sx={inputStyle}
-                        />
-
+                    <Grid size={{ xs: 1 }}>
                         {/* Блок з карткою "APPLY" */}
                         <Box
                             sx={{
@@ -181,7 +212,7 @@ const ApplicationForm = ({ onSuccess }) => {
                     </Grid>
                 </Grid>
             </Paper>
-        </Container>
+            </Container>
     );
 }
 

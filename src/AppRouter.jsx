@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App'; // App.jsx знаходиться поруч з AppRouter.jsx у папці src/
 import StatusPage from './components/StatusPage'; // ВИПРАВЛЕНО: StatusPage знаходиться у src/components/
