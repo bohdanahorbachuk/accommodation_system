@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Grid, Typography, Box, Paper, Button } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description'; // Іконка документа
 import CheckIcon from '@mui/icons-material/Check'; // Іконка галочки для статусу

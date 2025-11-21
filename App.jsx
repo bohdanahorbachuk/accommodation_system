@@ -1,9 +1,7 @@
-// App.jsx (Файл у корені, зі скоригованими шляхами до src/components)
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ApplicationForm from "./src/components/ApplicationForm"; 
-import ConfirmationPage from "./src/components/ConfirmationPage"; 
-import StatusPage from "./src/components/StatusPage"; 
+import ConfirmationPage from "./src/pages/ConfirmationPage"; 
+import StatusPage from "./src/pages/StatusPage"; 
 // import ApplicationsList from "./src/components/ApplicationsList"; // ВИДАЛЕНО
 import { CssBaseline, Box, Typography, Button } from "@mui/material";
 

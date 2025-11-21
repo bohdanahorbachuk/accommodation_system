@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Grid, Typography, Box, Card, CardContent, Button, Divider } from '@mui/material';
 
 // Дані-заглушки для відображення карток

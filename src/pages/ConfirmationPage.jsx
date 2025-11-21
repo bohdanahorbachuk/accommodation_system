@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Box, Typography, Link, Paper } from '@mui/material';
 
 // Компонент сторінки підтвердження приймає пропс onViewStatus
