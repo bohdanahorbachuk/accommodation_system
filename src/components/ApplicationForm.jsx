@@ -31,7 +31,7 @@ const ApplicationForm = ({ onSuccess }) => {
     
     const handleSubmit = async (e) => {
         const postData = {
-            userId: 1,
+            userId: 4,
             roomId: room,
             bedId: place,
             reservationReason: reason,
@@ -39,19 +39,27 @@ const ApplicationForm = ({ onSuccess }) => {
             reservationEndDate: dateToISO(checkOutDate)
         };
 
-        console.log(postData.reservationStartDate, postData.reservationEndDate);
+        var newReservationId = null
 
         try {
             const response = await axios.post('https://localhost:7193/api/reservations', postData);
 
-            setRoom('');
-            setReason('');
-            setPlace('');
-            setCheckInDate('');
-            setCheckOutDate('');
+            newReservationId = response.data.reservationId;
 
         } catch (error) {
             console.log(`Помилка під час надсилання: ${error.message}`);
+        }
+
+        setRoom('');
+        setReason('');
+        setPlace('');
+        setCheckInDate('');
+        setCheckOutDate('');
+
+        if (newReservationId) {
+            onSuccess(newReservationId); 
+        } else {
+            console.error("Помилка: Не вдалося отримати reservationId з відповіді.");
         }
     };
 
@@ -67,7 +75,7 @@ const ApplicationForm = ({ onSuccess }) => {
                     {/* Ліва колонка */}
                     <Grid size={{ xs: 1 }}>
                         {/* Період поселення */}
-                        <Typography variant="subtitle1" fontWeight="bold">Період поселення</Typography>
+                        <Typography variant="subtitle1" fontWeight="bold">Дата заселення</Typography>
 
                         <TextField
                             fullWidth
@@ -108,7 +116,7 @@ const ApplicationForm = ({ onSuccess }) => {
                     <Grid size={{ xs: 1 }}>
 
                         {/* Період поселення */}
-                        <Typography variant="subtitle1" fontWeight="bold" color='white'>Період поселення</Typography>
+                        <Typography variant="subtitle1" fontWeight="bold">Дата виселення</Typography>
 
                         {/* Дата виселення */}
                         <TextField

@@ -1,53 +1,82 @@
-import { Container, Grid, Typography, Box, Paper, Button } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description'; // Іконка документа
-import CheckIcon from '@mui/icons-material/Check'; // Іконка галочки для статусу
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import CheckIcon from '@mui/icons-material/Check';
 
-// Компонент сторінки статусу заявки
-const StatusPage = () => {
-    // Дані для відображення (в реальному додатку вони будуть отримані з API)
-    const applicationData = {
-        name: "Петренко Іван Іванович",
-        room: "№2",
-        place: "№3",
-        phone: "+380667864532",
-        date: "29.11.2025",
-        status: "Схвалено" // 'Схвалено', 'На розгляді', 'Відхилено'
-    };
+const StatusPage = ({ reservationId }) => {
+    const [applicationData, setApplicationData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Визначення кольору статусу
+    useEffect(() => {
+        if (!reservationId) {
+            setError("ID заявки не знайдено.");
+            setLoading(false);
+            return;
+        }
+
+        const fetchReservationDetails = async () => {
+            try {
+                const response = await axios.get(`https://localhost:7193/api/reservations/${reservationId}`);
+                setApplicationData(response.data);
+                setError(null);
+            } catch (err) {
+                console.error("Помилка при отриманні деталей:", err);
+                setError("Не вдалося завантажити деталі заявки.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchReservationDetails();
+    }, [reservationId]);
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return <Typography color="error" align="center" sx={{ mt: 4 }}>{error}</Typography>;
+    }
+
     let statusColor;
-    if (applicationData.status === 'Схвалено') {
-        statusColor = '#4caf50'; // Зелений
-    } else if (applicationData.status === 'На розгляді') {
-        statusColor = '#ff9800'; // Помаранчевий
+    if (applicationData.reservation_status_name === 'Прийнято') {
+        statusColor = '#4caf50';
+    } else if (applicationData.status === 'Створено') {
+        statusColor = '#ff9800';
     } else {
-        statusColor = '#f44336'; // Червоний
+        statusColor = '#f44336';
     }
 
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
             <Typography variant="h4" component="h1" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 4 }}>
-                Статус заявки
+                Деталі заявки
             </Typography>
 
             <Grid container spacing={4} alignItems="center">
                 {/* Ліва частина: Картка з даними */}
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12 }}>
                     <Paper elevation={3} sx={{ p: 3, borderRadius: '12px', bgcolor: '#f0f0f0' }}>
                         {/* Блок ПІБ */}
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 1, bgcolor: 'white', borderRadius: '8px' }}>
                             <DescriptionIcon sx={{ color: '#001f3f', fontSize: 30, mr: 1 }} />
                             <Typography variant="h6" fontWeight="bold" sx={{ color: '#001f3f' }}>
-                                {applicationData.name}
+                                {applicationData.full_name}
                             </Typography>
                         </Box>
 
                         {/* Інформація про кімнату та телефон */}
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
-                            Кімната **{applicationData.room}**, місце **{applicationData.place}**
+                            Кімната *{applicationData.room_id}*, місце *{applicationData.bed_id}*
                         </Typography>
                         <Typography variant="body1" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.phone}
+                            {applicationData.phone_number}
                         </Typography>
 
                         {/* Дата поселення */}
@@ -55,9 +84,21 @@ const StatusPage = () => {
                             Дата поселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.date}
+                            {applicationData.reservation_start_date}
                         </Typography>
 
+                         {/* Дата виселення */}
+                        <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
+                            Дата виселення
+                        </Typography>
+                        <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
+                            {applicationData.reservation_end_date}
+                        </Typography>
+
+                        <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
+                            Статус
+                        </Typography>
+                        
                         {/* Статус */}
                         <Box sx={{
                             display: 'inline-flex',
@@ -70,7 +111,7 @@ const StatusPage = () => {
                             mb: 3
                         }}>
                             <CheckIcon sx={{ fontSize: 18, mr: 0.5 }} />
-                            {applicationData.status}
+                            {applicationData.reservation_status_name}
                         </Box>
 
                         {/* Кнопка завантаження PDF */}

@@ -2,19 +2,17 @@ import { useState } from 'react';
 import ApplicationForm from "./src/components/ApplicationForm"; 
 import ConfirmationPage from "./src/pages/ConfirmationPage"; 
 import StatusPage from "./src/pages/StatusPage"; 
-// import ApplicationsList from "./src/components/ApplicationsList"; // ВИДАЛЕНО
+// import ApplicationsList from "./src/components/ApplicationsList";
 import { CssBaseline, Box, Typography, Button } from "@mui/material";
 
 function App() {
     // Початковий стан: 'form'
-    const [currentPage, setCurrentPage] = useState('form'); 
-    
-    // Ми більше не потребуємо currentApplicationId, оскільки StatusPage використовує заглушки
-
-    // --- Функції переходу ---
+    const [currentPage, setCurrentPage] = useState('form');
+    const [currentReservationId, setCurrentReservationId] = useState(null);
     
     // 1. З форми до підтвердження 
-    const handleFormSubmit = () => {
+    const handleFormSubmit = (reservationId) => {
+        setCurrentReservationId(reservationId);
         setCurrentPage('confirmation');
     };
 
@@ -33,10 +31,9 @@ function App() {
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
             break;
         case 'status':
-            PageContent = <StatusPage />;
+            PageContent = <StatusPage reservationId={currentReservationId} />;
             break;
         default:
-            // Якщо щось піде не так, показуємо форму
             PageContent = <ApplicationForm onSuccess={handleFormSubmit} />;
     }
 
