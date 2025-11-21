@@ -10,7 +10,7 @@ const StatusPage = ({ reservationId }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!reservationId) {
+        if (!reservationId || reservationId == null) {
             setError("ID заявки не знайдено.");
             setLoading(false);
             return;

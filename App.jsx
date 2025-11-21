@@ -8,7 +8,7 @@ import { CssBaseline, Box, Typography, Button } from "@mui/material";
 function App() {
     // Початковий стан: 'form'
     const [currentPage, setCurrentPage] = useState('list');
-    const [currentReservationId, setCurrentReservationId] = useState(2);
+    const [currentReservationId, setCurrentReservationId] = useState(null);
     
     // 1. З форми до підтвердження 
     const handleFormSubmit = (reservationId) => {
@@ -17,7 +17,11 @@ function App() {
     };
 
     // 2. З підтвердження до статусу
-    const handleViewStatus = () => {
+    const handleViewStatus = (reservationId) => {
+        if (reservationId && (typeof reservationId === 'number' || typeof reservationId === 'string')) 
+        {
+            setCurrentReservationId(reservationId);
+        }
         setCurrentPage('status');
     };
 
