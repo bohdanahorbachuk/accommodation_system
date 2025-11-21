@@ -2,13 +2,13 @@ import { useState } from 'react';
 import ApplicationForm from "./src/components/ApplicationForm"; 
 import ConfirmationPage from "./src/pages/ConfirmationPage"; 
 import StatusPage from "./src/pages/StatusPage"; 
-// import ApplicationsList from "./src/components/ApplicationsList";
+import ApplicationsList from "./src/components/ApplicationsList";
 import { CssBaseline, Box, Typography, Button } from "@mui/material";
 
 function App() {
     // Початковий стан: 'form'
-    const [currentPage, setCurrentPage] = useState('form');
-    const [currentReservationId, setCurrentReservationId] = useState(null);
+    const [currentPage, setCurrentPage] = useState('list');
+    const [currentReservationId, setCurrentReservationId] = useState(2);
     
     // 1. З форми до підтвердження 
     const handleFormSubmit = (reservationId) => {
@@ -19,6 +19,10 @@ function App() {
     // 2. З підтвердження до статусу
     const handleViewStatus = () => {
         setCurrentPage('status');
+    };
+
+    const handleNewApplication = () => {
+        setCurrentPage('form');
     };
 
     let PageContent;
@@ -32,6 +36,12 @@ function App() {
             break;
         case 'status':
             PageContent = <StatusPage reservationId={currentReservationId} />;
+            break;
+        case 'list':
+            PageContent = <ApplicationsList 
+                            onNewApplication={handleNewApplication} 
+                            onStatusView={handleViewStatus} 
+                        />;
             break;
         default:
             PageContent = <ApplicationForm onSuccess={handleFormSubmit} />;

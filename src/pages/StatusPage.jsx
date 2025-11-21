@@ -45,9 +45,9 @@ const StatusPage = ({ reservationId }) => {
     }
 
     let statusColor;
-    if (applicationData.reservation_status_name === 'Прийнято') {
+    if (applicationData.reservationStatusName === 'Прийнято') {
         statusColor = '#4caf50';
-    } else if (applicationData.status === 'Створено') {
+    } else if (applicationData.reservationStatusName === 'Створено') {
         statusColor = '#ff9800';
     } else {
         statusColor = '#f44336';
@@ -67,16 +67,16 @@ const StatusPage = ({ reservationId }) => {
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 1, bgcolor: 'white', borderRadius: '8px' }}>
                             <DescriptionIcon sx={{ color: '#001f3f', fontSize: 30, mr: 1 }} />
                             <Typography variant="h6" fontWeight="bold" sx={{ color: '#001f3f' }}>
-                                {applicationData.full_name}
+                                {applicationData.fullName}
                             </Typography>
                         </Box>
 
                         {/* Інформація про кімнату та телефон */}
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
-                            Кімната *{applicationData.room_id}*, місце *{applicationData.bed_id}*
+                            Кімната *{applicationData.roomId}*, місце *{applicationData.bedId}*
                         </Typography>
                         <Typography variant="body1" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.phone_number}
+                            {applicationData.phoneNumber}
                         </Typography>
 
                         {/* Дата поселення */}
@@ -84,7 +84,7 @@ const StatusPage = ({ reservationId }) => {
                             Дата поселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.reservation_start_date}
+                            {applicationData.reservationStartDate}
                         </Typography>
 
                          {/* Дата виселення */}
@@ -92,7 +92,7 @@ const StatusPage = ({ reservationId }) => {
                             Дата виселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.reservation_end_date}
+                            {applicationData.reservationEndDate}
                         </Typography>
 
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
@@ -111,7 +111,7 @@ const StatusPage = ({ reservationId }) => {
                             mb: 3
                         }}>
                             <CheckIcon sx={{ fontSize: 18, mr: 0.5 }} />
-                            {applicationData.reservation_status_name}
+                            {applicationData.reservationStatusName}
                         </Box>
 
                         {/* Кнопка завантаження PDF */}
