@@ -1,77 +1,139 @@
-import { useState } from 'react';
+// App.jsx (У корені проєкту)
+
+import React, { useState } from 'react';
+import { CssBaseline, Box } from "@mui/material";
+
+// Імпорти сторінок та компонентів
+import HomePage from "./src/pages/HomePage"; 
 import ApplicationForm from "./src/components/ApplicationForm"; 
 import ConfirmationPage from "./src/pages/ConfirmationPage"; 
 import StatusPage from "./src/pages/StatusPage"; 
 import ApplicationsList from "./src/components/ApplicationsList";
-import { CssBaseline, Box, Typography, Button } from "@mui/material";
+import Header from "./src/components/Header"; 
+import LoginPage from "./src/pages/LoginPage"; // Нова сторінка входу
+import RegisterPage from "./src/pages/RegisterPage"; // Нова сторінка реєстрації
+
+// Всі можливі стани сторінок
+const PAGE_STATES = {
+    HOME: 'home',
+    LOGIN: 'login',      // Новий стан
+    REGISTER: 'register', // Новий стан
+    LIST: 'list',
+    FORM: 'form',
+    CONFIRMATION: 'confirmation',
+    STATUS: 'status'
+};
 
 function App() {
-    // Початковий стан: 'form'
-    const [currentPage, setCurrentPage] = useState('list');
+    const [currentPage, setCurrentPage] = useState(PAGE_STATES.HOME);
     const [currentReservationId, setCurrentReservationId] = useState(null);
     
+    // --- Функції перемикання ---
+    
+    const handleViewHome = () => {
+        setCurrentPage(PAGE_STATES.HOME);
+    }
+    
+    // Перехід на сторінку входу
+    const handleLoginClick = () => {
+        setCurrentPage(PAGE_STATES.LOGIN);
+    };
+
+    // Перехід на сторінку реєстрації
+    const handleRegisterClick = () => {
+        setCurrentPage(PAGE_STATES.REGISTER);
+    };
+
+    // Обробник після успішного входу/реєстрації (можна перенаправляти на іншу сторінку)
+    const handleAuthSuccess = () => {
+        // Після входу/реєстрації можна перейти, наприклад, на список заявок
+        setCurrentPage(PAGE_STATES.LIST); 
+    };
+
+    // Перехід на форму (з HomePage, або ApplicationsList)
+    const handleNewApplication = () => {
+        setCurrentPage(PAGE_STATES.FORM);
+        setCurrentReservationId(null);
+    };
+
+    // Перехід на список заявок
+    const handleViewList = () => {
+        setCurrentPage(PAGE_STATES.LIST);
+    };
+
     // 1. З форми до підтвердження 
     const handleFormSubmit = (reservationId) => {
         setCurrentReservationId(reservationId);
-        setCurrentPage('confirmation');
+        setCurrentPage(PAGE_STATES.CONFIRMATION);
     };
 
-    // 2. З підтвердження до статусу
+    // 2. З підтвердження або списку до статусу
     const handleViewStatus = (reservationId) => {
-        if (reservationId && (typeof reservationId === 'number' || typeof reservationId === 'string')) 
-        {
+        if (reservationId && (typeof reservationId === 'number' || typeof reservationId === 'string')) {
             setCurrentReservationId(reservationId);
         }
-        setCurrentPage('status');
+        setCurrentPage(PAGE_STATES.STATUS);
     };
 
-    const handleNewApplication = () => {
-        setCurrentPage('form');
+    // Для посилання "Забули пароль?"
+    const handleForgotPassword = () => {
+        console.log("Перехід до відновлення пароля");
+        // Тут може бути перехід на окрему сторінку відновлення пароля
     };
+
 
     let PageContent;
 
     switch (currentPage) {
-        case 'form':
+        case PAGE_STATES.HOME:
+            PageContent = <HomePage onStartApplication={handleRegisterClick} />; // "Подати заявку" веде на реєстрацію
+            break;
+        case PAGE_STATES.LOGIN:
+            PageContent = <LoginPage 
+                            onLoginSuccess={handleAuthSuccess} 
+                            onForgotPassword={handleForgotPassword}
+                            onRegisterClick={handleRegisterClick} // Додано для переходу на реєстрацію
+                          />;
+            break;
+        case PAGE_STATES.REGISTER:
+            PageContent = <RegisterPage 
+                            onRegisterSuccess={handleAuthSuccess} 
+                            onLoginClick={handleLoginClick} // Додано для переходу на вхід
+                          />;
+            break;
+        case PAGE_STATES.FORM:
             PageContent = <ApplicationForm onSuccess={handleFormSubmit} />;
             break;
-        case 'confirmation':
+        case PAGE_STATES.CONFIRMATION:
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
             break;
-        case 'status':
+        case PAGE_STATES.STATUS:
             PageContent = <StatusPage reservationId={currentReservationId} />;
             break;
-        case 'list':
+        case PAGE_STATES.LIST:
             PageContent = <ApplicationsList 
                             onNewApplication={handleNewApplication} 
                             onStatusView={handleViewStatus} 
                         />;
             break;
         default:
-            PageContent = <ApplicationForm onSuccess={handleFormSubmit} />;
+            PageContent = <HomePage onStartApplication={handleRegisterClick} />;
     }
 
     return (
         <>
             <CssBaseline /> 
             
-            <Box sx={{ bgcolor: '#001f3f', color: 'white', p: 2, display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ ml: 1, fontWeight: 'bold' }}>LNU DormStay</Typography>
-                
-                {/* Тимчасова кнопка для скидання стану на 'form' */}
-                {currentPage !== 'form' && (
-                    <Button 
-                        onClick={() => setCurrentPage('form')} 
-                        sx={{ ml: 'auto', color: 'white', border: '1px solid white' }}
-                        size="small"
-                        variant="outlined"
-                    >
-                        Початок
-                    </Button>
-                )}
-            </Box>
+            <Header 
+                onLogoClick={handleViewHome} 
+                onLoginClick={handleLoginClick} // Тепер веде на сторінку входу
+                onRegisterClick={handleRegisterClick} // Тепер веде на сторінку реєстрації
+                onViewList={handleViewList} // Можна додати кнопку "Мої заявки" у шапку
+            />
             
-            {PageContent}
+            <Box sx={{ flexGrow: 1 }}>
+                {PageContent}
+            </Box>
         </>
     );
 }
