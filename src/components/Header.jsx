@@ -1,6 +1,3 @@
-// src/components/Header.jsx (оновлений)
-
-import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Link } from '@mui/material';
 import CottageIcon from '@mui/icons-material/Cottage';
 

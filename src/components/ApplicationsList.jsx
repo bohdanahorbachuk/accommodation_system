@@ -54,27 +54,35 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, onSta
 );
 
 // Компонент сторінки "Мої заявки"
-const ApplicationsList = ({ onNewApplication, onStatusView }) => {
+const ApplicationsList = ({ userId, onNewApplication, onStatusView }) => {
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (!userId) {
+                setIsLoading(false);
+                setError('Не вдалося визначити користувача. Перевірте статус входу.');
+                return;
+        }
+        
         const loadApplications = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`https://localhost:7193/api/reservations`);
+                const apiUrl = `https://localhost:7193/api/reservations?userId=${userId}`;
+                const response = await axios.get(apiUrl);
                 setReservations(response.data);
             } catch (err) {
                 console.error("Помилка завантаження заявок:", err);
                 setError('Не вдалося завантажити дані. Спробуйте пізніше.');
+                setReservations([]); // Очищуємо список у разі помилки
             } finally {
                 setIsLoading(false);
             }
         };
 
         loadApplications();
-    }, []);
+    }, [userId]);
 
     if (isLoading) {
         return (

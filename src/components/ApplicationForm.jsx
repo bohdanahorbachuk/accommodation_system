@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Container, Grid, Typography, TextField, Button, Box, Paper } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
-const ApplicationForm = ({ onSuccess }) => { 
+const ApplicationForm = ({ userId, onSuccess }) => { 
     const [room, setRoom] = useState('');
     const [place, setPlace] = useState('');
     const [reason, setReason] = useState('');
@@ -31,7 +31,7 @@ const ApplicationForm = ({ onSuccess }) => {
     
     const handleSubmit = async (e) => {
         const postData = {
-            userId: 4,
+            userId: userId,
             roomId: room,
             bedId: place,
             reservationReason: reason,

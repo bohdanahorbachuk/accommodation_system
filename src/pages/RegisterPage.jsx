@@ -1,22 +1,53 @@
-// src/pages/RegisterPage.jsx
-
-import React from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import { Container, Grid, Typography, Box, TextField, Button, Link, MenuItem } from '@mui/material';
 
-const RegisterPage = ({ onRegisterSuccess, onLoginClick }) => {
+const RegisterPage = ({ onRegisterSuccess }) => {
     const darkBlue = '#001f3f'; // Темно-синій для кнопок
+    const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmedPassword, setConfirmedPassword] = useState('');
+    const [role, setRole] = useState('');
+    const [adminIdentifier, setAdminIdentifier] = useState('');
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        // Тут буде логіка реєстрації
-        console.log('Спроба реєстрації...');
-        onRegisterSuccess(); // Викликаємо успішну реєстрацію (для App.jsx)
+
+        const postData = {
+            name: name,
+            surname: surname,
+            patronymic: "",
+            email: email,
+            phoneNumber: phone,
+            password: password,
+            roleId: role,
+            adminIdentifier: adminIdentifier
+        };
+
+        try {
+            await axios.post('https://localhost:7193/api/auth/register', postData);
+            
+            setName('');
+            setSurname('');
+            setEmail('');
+            setPhone('');
+            setPassword('');
+            setConfirmedPassword('');
+            setRole('');
+            setAdminIdentifier('');
+
+            onRegisterSuccess();
+        } catch (error) {
+            console.error(`Помилка під час надсилання: ${error.message}`);
+        }
     };
 
     const roles = [
-        { value: 'student', label: 'Студент' },
-        { value: 'admin', label: 'Адміністратор' },
-        // Можливо, інші ролі
+        { id: 1, value: 'student', label: 'Студент' },
+        { id: 2, value: 'admin', label: 'Адміністратор' },
     ];
 
     return (
@@ -45,46 +76,94 @@ const RegisterPage = ({ onRegisterSuccess, onLoginClick }) => {
                 </Typography>
                 
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="*Ім'я" variant="outlined" required />
+                    <Grid container spacing={4} columns={{ xs: 2 }}>
+                        {/* Ліва колонка */}
+                        <Grid size={{ xs: 1 }}>
+                            <TextField
+                                fullWidth
+                                label="Ім'я"
+                                variant="outlined"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                            
+                            <TextField
+                                fullWidth
+                                label="Прізвище"
+                                variant="outlined"
+                                required
+                                value={surname}
+                                onChange={(e) => setSurname(e.target.value)}
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                variant="outlined"
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Номер телефону"
+                                variant="outlined"
+                                required
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="*Пароль" variant="outlined" type="password" required />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="*Прізвище" variant="outlined" required />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="*Повторити пароль" variant="outlined" type="password" required />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="*email" variant="outlined" type="email" required />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
+
+                        {/* Права колонка */}
+                        <Grid size={{ xs: 1 }}>
+                            <TextField
+                                fullWidth
+                                label="Пароль"
+                                variant="outlined"
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Повторити пароль"
+                                variant="outlined"
+                                type="password"
+                                required
+                                value={confirmedPassword}
+                                onChange={(e) => setConfirmedPassword(e.target.value)}
+                            />
+                        
                             <TextField 
                                 select
                                 fullWidth 
-                                label="*Роль" 
-                                variant="outlined" 
-                                defaultValue="student"
+                                label="Роль" 
+                                variant="outlined"
                                 required
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
                             >
                                 {roles.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
+                                    <MenuItem key={option.id} value={option.id}>
                                         {option.label}
                                     </MenuItem>
                                 ))}
                             </TextField>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="Номер телефону" variant="outlined" />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="*Ідентифікатор (admin)" variant="outlined" />
+                        
+                            <TextField
+                                fullWidth
+                                label="Ідентифікатор (адміністратор)"
+                                variant="outlined"
+                                value={adminIdentifier}
+                                onChange={(e) => setAdminIdentifier(e.target.value)}
+                            />
                         </Grid>
                     </Grid>
-                    
                     <Button
                         fullWidth
                         type="submit"
@@ -102,21 +181,6 @@ const RegisterPage = ({ onRegisterSuccess, onLoginClick }) => {
                     >
                         Зареєструватись
                     </Button>
-
-                    <Box sx={{ mt: 3, textAlign: 'center' }}>
-                        <Link 
-                            href="#" 
-                            onClick={onLoginClick} 
-                            variant="body2" 
-                            sx={{ 
-                                color: darkBlue, 
-                                textDecoration: 'none', 
-                                '&:hover': { textDecoration: 'underline' } 
-                            }}
-                        >
-                            Вже маєте обліковий запис? Увійти
-                        </Link>
-                    </Box>
                 </Box>
             </Box>
         </Container>

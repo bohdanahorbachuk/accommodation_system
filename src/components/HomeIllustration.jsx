@@ -1,5 +1,4 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 
 const HomeIllustration = () => {
   const blueColor = '#001f3f'; // Темно-синій, як у логотипі

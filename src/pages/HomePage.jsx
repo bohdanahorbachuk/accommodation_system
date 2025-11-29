@@ -1,12 +1,9 @@
-import React from 'react';
-import { Container, Grid, Typography, Box, Button } from '@mui/material';
-import Header from '../components/Header';
+import { Container, Grid, Typography, Box } from '@mui/material';
 // import DormIllustration from './DormIllustration'; // Для реальної ілюстрації
 import HomeIllustration from '../components/HomeIllustration'; // Використовуємо тимчасову ілюстрацію
 
-const HomePage = ({ onStartApplication }) => {
+const HomePage = () => {
     const primaryColor = '#8b0000'; // Бордовий колір для заголовка
-    const darkBlue = '#001f3f'; // Темно-синій для кнопки
 
     return (
         <Container maxWidth="lg" sx={{ mt: 8, mb: 8, minHeight: '70vh' }}>
@@ -32,24 +29,6 @@ const HomePage = ({ onStartApplication }) => {
                         <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
                             Подай заявку на тимчасове проживання в гуртожитку онлайн швидко та зручно!
                         </Typography>
-                        
-                        {/* Кнопка "Подати нову заявку" */}
-                        <Button
-                            variant="contained"
-                            size="large"
-                            onClick={onStartApplication} // Викликаємо функцію App.jsx
-                            sx={{
-                                backgroundColor: darkBlue,
-                                '&:hover': { backgroundColor: '#003366' },
-                                fontWeight: 'bold',
-                                borderRadius: '8px',
-                                textTransform: 'none',
-                                py: 1.5,
-                                px: 3,
-                            }}
-                        >
-                            Подати нову заявку
-                        </Button>
                     </Box>
                 </Grid>
 

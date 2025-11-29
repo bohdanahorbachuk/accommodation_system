@@ -1,32 +1,37 @@
-// App.jsx (У корені проєкту)
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CssBaseline, Box } from "@mui/material";
 
-// Імпорти сторінок та компонентів
 import HomePage from "./src/pages/HomePage"; 
 import ApplicationForm from "./src/components/ApplicationForm"; 
 import ConfirmationPage from "./src/pages/ConfirmationPage"; 
 import StatusPage from "./src/pages/StatusPage"; 
 import ApplicationsList from "./src/components/ApplicationsList";
 import Header from "./src/components/Header"; 
-import LoginPage from "./src/pages/LoginPage"; // Нова сторінка входу
-import RegisterPage from "./src/pages/RegisterPage"; // Нова сторінка реєстрації
+import AdminDashboard from "./src/components/AdminDashboard";
+import LoginPage from "./src/pages/LoginPage";
+import RegisterPage from "./src/pages/RegisterPage";
+
+const USER_ROLES = {
+    STUDENT: 1,
+    ADMIN: 2,
+};
 
 // Всі можливі стани сторінок
 const PAGE_STATES = {
     HOME: 'home',
-    LOGIN: 'login',      // Новий стан
-    REGISTER: 'register', // Новий стан
+    LOGIN: 'login',
+    REGISTER: 'register',
     LIST: 'list',
     FORM: 'form',
     CONFIRMATION: 'confirmation',
-    STATUS: 'status'
+    STATUS: 'status',
+    ADMIN_DASHBOARD: 'admin_dashboard'
 };
 
 function App() {
     const [currentPage, setCurrentPage] = useState(PAGE_STATES.HOME);
     const [currentReservationId, setCurrentReservationId] = useState(null);
+    const [authData, setAuthData] = useState(null);
     
     // --- Функції перемикання ---
     
@@ -44,10 +49,24 @@ function App() {
         setCurrentPage(PAGE_STATES.REGISTER);
     };
 
-    // Обробник після успішного входу/реєстрації (можна перенаправляти на іншу сторінку)
-    const handleAuthSuccess = () => {
-        // Після входу/реєстрації можна перейти, наприклад, на список заявок
-        setCurrentPage(PAGE_STATES.LIST); 
+    // Обробник після успішного входу
+    const handleLoginSuccess = (data) => {
+        setAuthData(data); // Зберігаємо дані про автентифікацію
+        
+        // Умовне перенаправлення на основі ролі
+        if (data.userRole === USER_ROLES.STUDENT) {
+            setCurrentPage(PAGE_STATES.LIST);
+        } else if (data.userRole === USER_ROLES.ADMIN) {
+            setCurrentPage(PAGE_STATES.ADMIN_DASHBOARD);
+        } else {
+            console.error("Невідома роль користувача:", data.userRole);
+            setCurrentPage(PAGE_STATES.HOME); 
+        }
+    };
+
+    // Обробник після успішної реєстрації
+    const handleRegisterSuccess = () => {
+        setCurrentPage(PAGE_STATES.HOME);
     };
 
     // Перехід на форму (з HomePage, або ApplicationsList)
@@ -86,23 +105,25 @@ function App() {
 
     switch (currentPage) {
         case PAGE_STATES.HOME:
-            PageContent = <HomePage onStartApplication={handleRegisterClick} />; // "Подати заявку" веде на реєстрацію
+            PageContent = <HomePage />;
             break;
         case PAGE_STATES.LOGIN:
             PageContent = <LoginPage 
-                            onLoginSuccess={handleAuthSuccess} 
+                            onLoginSuccess={handleLoginSuccess} 
                             onForgotPassword={handleForgotPassword}
-                            onRegisterClick={handleRegisterClick} // Додано для переходу на реєстрацію
+                            onRegisterClick={handleRegisterClick}
                           />;
             break;
         case PAGE_STATES.REGISTER:
             PageContent = <RegisterPage 
-                            onRegisterSuccess={handleAuthSuccess} 
-                            onLoginClick={handleLoginClick} // Додано для переходу на вхід
+                            onRegisterSuccess={handleRegisterSuccess} 
+                            onLoginClick={handleLoginClick}
                           />;
             break;
         case PAGE_STATES.FORM:
-            PageContent = <ApplicationForm onSuccess={handleFormSubmit} />;
+            PageContent = <ApplicationForm
+                            userId={authData?.userId}
+                            onSuccess={handleFormSubmit} />;
             break;
         case PAGE_STATES.CONFIRMATION:
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
@@ -112,9 +133,13 @@ function App() {
             break;
         case PAGE_STATES.LIST:
             PageContent = <ApplicationsList 
+                            userId={authData?.userId}
                             onNewApplication={handleNewApplication} 
                             onStatusView={handleViewStatus} 
                         />;
+            break;
+        case PAGE_STATES.ADMIN_DASHBOARD:
+            PageContent = <AdminDashboard />;
             break;
         default:
             PageContent = <HomePage onStartApplication={handleRegisterClick} />;
@@ -126,9 +151,8 @@ function App() {
             
             <Header 
                 onLogoClick={handleViewHome} 
-                onLoginClick={handleLoginClick} // Тепер веде на сторінку входу
-                onRegisterClick={handleRegisterClick} // Тепер веде на сторінку реєстрації
-                onViewList={handleViewList} // Можна додати кнопку "Мої заявки" у шапку
+                onLoginClick={handleLoginClick}
+                onRegisterClick={handleRegisterClick}
             />
             
             <Box sx={{ flexGrow: 1 }}>
