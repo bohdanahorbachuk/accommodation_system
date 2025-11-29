@@ -16,9 +16,6 @@ const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
             password: password
         };
 
-        console.log("Спроба входу ...");
-        console.log(postData);
-
         try {
             var response = await axios.post('https://localhost:7193/api/auth/login', postData);
 
