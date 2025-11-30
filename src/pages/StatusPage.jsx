@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } from '@mui/material';
+import { Container, Grid, Typography, Box, Paper, Button, CircularProgress, Stack } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CheckIcon from '@mui/icons-material/Check';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const StatusPage = ({ reservationId }) => {
     const [applicationData, setApplicationData] = useState(null);

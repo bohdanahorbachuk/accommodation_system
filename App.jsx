@@ -8,6 +8,7 @@ import StatusPage from "./src/pages/StatusPage";
 import ApplicationsList from "./src/components/ApplicationsList";
 import Header from "./src/components/Header"; 
 import AdminDashboard from "./src/components/AdminDashboard";
+import AdminApplicationDetails from "./src/pages/AdminApplicationDetails";
 import LoginPage from "./src/pages/LoginPage";
 import RegisterPage from "./src/pages/RegisterPage";
 
@@ -25,13 +26,19 @@ const PAGE_STATES = {
     FORM: 'form',
     CONFIRMATION: 'confirmation',
     STATUS: 'status',
-    ADMIN_DASHBOARD: 'admin_dashboard'
+    ADMIN_DASHBOARD: 'admin_dashboard',
+    ADMIN_APPLICATION_DETAILS: 'admin_application_details'
 };
 
 function App() {
-    const [currentPage, setCurrentPage] = useState(PAGE_STATES.HOME);
+    // Захардкоджені дані адміністратора
+    const [authData, setAuthData] = useState({
+        accessToken: 'hardcoded-admin-token',
+        userId: 1,
+        userRole: USER_ROLES.ADMIN // 2
+    });
+    const [currentPage, setCurrentPage] = useState(PAGE_STATES.ADMIN_DASHBOARD);
     const [currentReservationId, setCurrentReservationId] = useState(null);
-    const [authData, setAuthData] = useState(null);
     
     // --- Функції перемикання ---
     
@@ -94,6 +101,19 @@ function App() {
         setCurrentPage(PAGE_STATES.STATUS);
     };
 
+    // Перехід на сторінку деталей заявки для адміністратора
+    const handleViewAdminApplicationDetails = (reservationId) => {
+        if (reservationId && (typeof reservationId === 'number' || typeof reservationId === 'string')) {
+            setCurrentReservationId(reservationId);
+        }
+        setCurrentPage(PAGE_STATES.ADMIN_APPLICATION_DETAILS);
+    };
+
+    // Повернення до адмін-панелі
+    const handleBackToAdminDashboard = () => {
+        setCurrentPage(PAGE_STATES.ADMIN_DASHBOARD);
+    };
+
     // Для посилання "Забули пароль?"
     const handleForgotPassword = () => {
         console.log("Перехід до відновлення пароля");
@@ -139,7 +159,13 @@ function App() {
                         />;
             break;
         case PAGE_STATES.ADMIN_DASHBOARD:
-            PageContent = <AdminDashboard />;
+            PageContent = <AdminDashboard onStatusView={handleViewAdminApplicationDetails} />;
+            break;
+        case PAGE_STATES.ADMIN_APPLICATION_DETAILS:
+            PageContent = <AdminApplicationDetails 
+                            reservationId={currentReservationId} 
+                            onBack={handleBackToAdminDashboard}
+                          />;
             break;
         default:
             PageContent = <HomePage onStartApplication={handleRegisterClick} />;
