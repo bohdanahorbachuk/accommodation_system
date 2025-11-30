@@ -75,10 +75,10 @@ const Header = ({ onLogoClick, onLoginClick, onRegisterClick, onViewList }) => {
                         Зареєструватись
                     </Button>
                     
-                    {/* Тимчасова кнопка "Головна" для навігації з авторизації */}
+                    {/* Кнопка "Головна" для навігації */}
                     <Button
                         variant="outlined"
-                        onClick={onLogoClick} // Кнопка Головна завжди веде на Home
+                        onClick={onLogoClick}
                         sx={{
                             ml: 2,
                             borderColor: '#001f3f',

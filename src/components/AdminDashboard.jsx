@@ -1,8 +1,8 @@
-const AdminDashboard = () => { 
+import AdminApplicationsList from './AdminApplicationsList';
+
+const AdminDashboard = ({ onStatusView }) => { 
     return (
-        <Typography variant="h4" component="h1" sx={{ color: '#8b0000', fontWeight: 'bold', mb: 3 }}>
-            Admin Dashboard
-        </Typography>    
+        <AdminApplicationsList onStatusView={onStatusView} />
     );
 }
 
