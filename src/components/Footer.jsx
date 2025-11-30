@@ -1,25 +1,24 @@
-// src/components/Footer.jsx (ВИПРАВЛЕНО)
+// src/components/Footer.jsx (ВИПРАВЛЕНО ПОСИЛАННЯ)
 
 import React from 'react';
 import { Box, Container, Grid, Typography, Link } from '@mui/material';
 import CottageIcon from '@mui/icons-material/Cottage';
 
-// URL для Офіційного сайту ФПМІ
-const FPMI_URL = "https://ami.lnu.edu.ua/";
+// НОВИЙ КОРЕКТНИЙ URL
+const FPMI_URL = "https://ami.lnu.edu.ua/"; 
 
-// Компонент приймає функцію для переходу на сторінку поширених запитань
 const Footer = ({ onFaqClick }) => {
     
     const sectionTitleStyle = {
         fontWeight: 'bold',
         color: '#001f3f',
-        mb: 1
+        mb: 1.5
     };
 
     const linkStyle = {
         color: 'text.secondary',
         textDecoration: 'none',
-        mb: 0.5,
+        mb: 0.8,
         display: 'block',
         fontSize: '0.9rem',
         cursor: 'pointer',
@@ -39,46 +38,44 @@ const Footer = ({ onFaqClick }) => {
                 mt: 'auto', 
             }}
         >
-            <Container maxWidth="lg">
-                <Grid container spacing={4}>
+            <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, md: 6 } }}> 
+                
+                <Grid container spacing={4} justifyContent="space-between"> 
                     
-                    {/* КОЛОНКА 1: Логотип та Простір */}
-                    <Grid item xs={12} sm={4}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    {/* КОЛОНКА 1: ЛОГОТИП */}
+                    <Grid item xs={12} sm={6} md={3}> 
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                             <CottageIcon sx={{ color: '#001f3f', mr: 1, fontSize: 28 }} />
                             <Typography variant="h6" sx={{ color: '#001f3f', fontWeight: 'bold' }}>
                                 LNU DormStay
                             </Typography>
                         </Box>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
                             LNU DormStay
                         </Typography>
                     </Grid>
-
-                    {/* КОЛОНКА 2: ДІЗНАТИСЬ БІЛЬШЕ (FAQ, Сайт) */}
-                    <Grid item xs={12} sm={4}>
+                    
+                    {/* КОЛОНКА 2: ДІЗНАТИСЬ БІЛЬШЕ (ЛІВО-ЦЕНТР) */}
+                    <Grid item xs={12} sm={6} md={3}> 
                         <Typography variant="subtitle1" sx={sectionTitleStyle}>
                             Дізнатись більше
                         </Typography>
                         
-                        {/* Поширені запитання (Перехід на окрему сторінку) */}
                         <Link component="button" onClick={onFaqClick} sx={linkStyle}>
                             Поширені запитання
                         </Link>
                         
-                        {/* Офіційний сайт ФПМІ (Зовнішнє посилання) */}
+                        {/* Посилання на Офіційний сайт ФПМІ з новим URL */}
                         <Link href={FPMI_URL} target="_blank" rel="noopener" sx={linkStyle}>
                             Офіційний сайт ФПМІ
                         </Link>
                     </Grid>
 
-                    {/* КОЛОНКА 3: КОНТАКТИ */}
-                    <Grid item xs={12} sm={4}>
+                    {/* КОЛОНКА 3: КОНТАКТИ (ПРАВОРУЧ) */}
+                    <Grid item xs={12} sm={6} md={3}> 
                         <Typography variant="subtitle1" sx={sectionTitleStyle}>
-                            Контакти {/* <--- ЗМІНЕНО ЗАГОЛОВОК */}
+                            Контакти
                         </Typography>
-                        
-                        {/* ВИДАЛЕНО: зайве посилання "Контакти" */}
                         
                         <Box sx={{ mt: 1 }}>
                             <Typography variant="body2" color="text.primary">
