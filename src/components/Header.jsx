@@ -1,20 +1,22 @@
+// src/components/Header.jsx (ФІНАЛЬНА ВЕРСІЯ ДЛЯ АВТЕНТИФІКАЦІЇ)
+
+import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Link } from '@mui/material';
 import CottageIcon from '@mui/icons-material/Cottage';
 
-const Header = ({ onLogoClick, onLoginClick, onRegisterClick, onViewList }) => {
+// Додаємо currentPage до пропсів
+const Header = ({ onLogoClick, onLoginClick, onRegisterClick, onLogout, isLoggedIn, isAdmin, currentPage }) => { 
+    
+    // ... (Стилі залишаються незмінними) ...
     
     const registerButtonStyle = {
         backgroundColor: '#001f3f', 
         color: 'white',
-        '&:hover': {
-            backgroundColor: '#003366',
-        },
+        '&:hover': { backgroundColor: '#003366' },
         fontWeight: 'bold',
         borderRadius: '8px',
         textTransform: 'none',
-        ml: 2, 
-        px: 2, 
-        py: 0.8, 
+        ml: 2, px: 2, py: 0.8, 
     };
     
     const loginLinkStyle = {
@@ -23,26 +25,74 @@ const Header = ({ onLogoClick, onLoginClick, onRegisterClick, onViewList }) => {
         textDecoration: 'none',
         ml: 2, 
         cursor: 'pointer',
+        '&:hover': { textDecoration: 'underline' }
+    };
+    
+    const generalButtonStyle = {
+        ml: 2,
+        borderColor: '#001f3f',
+        color: '#001f3f',
         '&:hover': {
-            textDecoration: 'underline',
-        }
+            borderColor: '#003366',
+            color: '#003366',
+            bgcolor: 'rgba(0,31,63,0.05)',
+        },
+        fontWeight: 'bold',
+        borderRadius: '8px',
+        textTransform: 'none',
+        px: 2,
+        py: 0.8,
     };
 
-    return (
-        <AppBar 
-            position="static" 
-            sx={{ 
-                bgcolor: 'white', 
-                boxShadow: 'none', 
-                borderBottom: '1px solid #e0e0e0' 
-            }}
+
+    // Динамічний блок навігації
+    const AuthContent = isLoggedIn ? (
+        // === СТАН: АВТОРИЗОВАНИЙ КОРИСТУВАЧ (Вихід) ===
+        <Button
+            variant="outlined"
+            onClick={onLogout} 
+            sx={generalButtonStyle}
         >
-            <Toolbar sx={{ 
-                maxWidth: 'lg', 
-                width: '100%', 
-                margin: '0 auto', 
-                py: 1.5 
-            }}>
+            Вихід
+        </Button>
+    ) : (
+        // === СТАН: НЕАВТОРИЗОВАНИЙ КОРИСТУВАЧ ===
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            
+            {/* 1. КНОПКА "УВІЙТИ" (Відображається лише, якщо ми НЕ на сторінці входу) */}
+            {currentPage !== 'login' && (
+                <Link onClick={onLoginClick} sx={loginLinkStyle}>
+                    Увійти
+                </Link>
+            )}
+            
+            {/* 2. КНОПКА "ЗАРЕЄСТРУВАТИСЬ" (Відображається лише, якщо ми НЕ на сторінці реєстрації) */}
+            {currentPage !== 'register' && (
+                <Button 
+                    variant="contained" 
+                    onClick={onRegisterClick}
+                    sx={registerButtonStyle}
+                >
+                    Зареєструватись
+                </Button>
+            )}
+            
+            {/* 3. КНОПКА "ГОЛОВНА" (Відображається, якщо ми не на HOME) */}
+            {currentPage !== 'home' && (
+                <Button
+                    variant="outlined"
+                    onClick={onLogoClick} 
+                    sx={generalButtonStyle}
+                >
+                    Головна
+                </Button>
+            )}
+        </Box>
+    );
+
+    return (
+        <AppBar position="static" sx={{ bgcolor: 'white', boxShadow: 'none', borderBottom: '1px solid #e0e0e0' }}>
+            <Toolbar sx={{ maxWidth: 'lg', width: '100%', margin: '0 auto', py: 1.5 }}>
                 
                 {/* Логотип LNU DormStay */}
                 <Box 
@@ -59,44 +109,8 @@ const Header = ({ onLogoClick, onLoginClick, onRegisterClick, onViewList }) => {
                     </Typography>
                 </Box>
                 
-                {/* Навігація */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {/* Кнопка "Увійти" */}
-                    <Link onClick={onLoginClick} sx={loginLinkStyle}>
-                        Увійти
-                    </Link>
-                    
-                    {/* Кнопка "Зареєструватись" */}
-                    <Button 
-                        variant="contained" 
-                        onClick={onRegisterClick}
-                        sx={registerButtonStyle}
-                    >
-                        Зареєструватись
-                    </Button>
-                    
-                    {/* Тимчасова кнопка "Головна" для навігації з авторизації */}
-                    <Button
-                        variant="outlined"
-                        onClick={onLogoClick} // Кнопка Головна завжди веде на Home
-                        sx={{
-                            ml: 2,
-                            borderColor: '#001f3f',
-                            color: '#001f3f',
-                            '&:hover': {
-                                borderColor: '#003366',
-                                color: '#003366',
-                                bgcolor: 'rgba(0,31,63,0.05)',
-                            },
-                            fontWeight: 'bold',
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            px: 2,
-                            py: 0.8,
-                        }}
-                    >
-                        Головна
-                    </Button>
+                    {AuthContent}
                 </Box>
             </Toolbar>
         </AppBar>

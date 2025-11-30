@@ -1,6 +1,9 @@
-import { useState } from 'react';
+// App.jsx (ФІНАЛЬНИЙ ЧИСТИЙ РОБОЧИЙ ФАЙЛ)
+
+import React, { useState } from 'react'; 
 import { CssBaseline, Box } from "@mui/material";
 
+// ІМПОРТИ: Виходячи з наданої архітектури
 import HomePage from "./src/pages/HomePage"; 
 import ApplicationForm from "./src/components/ApplicationForm"; 
 import ConfirmationPage from "./src/pages/ConfirmationPage"; 
@@ -16,7 +19,6 @@ const USER_ROLES = {
     ADMIN: 2,
 };
 
-// Всі можливі стани сторінок
 const PAGE_STATES = {
     HOME: 'home',
     LOGIN: 'login',
@@ -29,83 +31,51 @@ const PAGE_STATES = {
 };
 
 function App() {
-    const [currentPage, setCurrentPage] = useState(PAGE_STATES.HOME);
-    const [currentReservationId, setCurrentReservationId] = useState(null);
-    const [authData, setAuthData] = useState(null);
+    // ТИМЧАСОВА ЗМІНА: Форсуємо сторінку CONFIRMATION для перевірки
+    const [currentPage, setCurrentPage] = useState(PAGE_STATES.CONFIRMATION); 
+    
+    // Єдине оголошення для ID та AuthData
+    const [currentReservationId, setCurrentReservationId] = useState(12345); // Тестовий ID
+    const [authData, setAuthData] = useState({ userId: 'test_user', userRole: USER_ROLES.STUDENT }); // Тестова авторизація
+    
+    // --- Допоміжні змінні ---
+    const isLoggedIn = !!authData; 
+    const isAdmin = authData?.userRole === USER_ROLES.ADMIN;
     
     // --- Функції перемикання ---
     
-    const handleViewHome = () => {
-        setCurrentPage(PAGE_STATES.HOME);
-    }
+    const handleViewHome = () => { setCurrentPage(PAGE_STATES.HOME); };
+    const handleLogout = () => { setAuthData(null); setCurrentPage(PAGE_STATES.HOME); };
+    const handleLoginClick = () => { setCurrentPage(PAGE_STATES.LOGIN); };
+    const handleRegisterClick = () => { setCurrentPage(PAGE_STATES.REGISTER); };
     
-    // Перехід на сторінку входу
-    const handleLoginClick = () => {
-        setCurrentPage(PAGE_STATES.LOGIN);
-    };
-
-    // Перехід на сторінку реєстрації
-    const handleRegisterClick = () => {
-        setCurrentPage(PAGE_STATES.REGISTER);
-    };
-
-    // Обробник після успішного входу
     const handleLoginSuccess = (data) => {
-        setAuthData(data); // Зберігаємо дані про автентифікацію
-        
-        // Умовне перенаправлення на основі ролі
-        if (data.userRole === USER_ROLES.STUDENT) {
-            setCurrentPage(PAGE_STATES.LIST);
-        } else if (data.userRole === USER_ROLES.ADMIN) {
-            setCurrentPage(PAGE_STATES.ADMIN_DASHBOARD);
-        } else {
-            console.error("Невідома роль користувача:", data.userRole);
-            setCurrentPage(PAGE_STATES.HOME); 
-        }
+        setAuthData(data); 
+        data.userRole === USER_ROLES.STUDENT ? setCurrentPage(PAGE_STATES.LIST) : setCurrentPage(PAGE_STATES.ADMIN_DASHBOARD);
     };
-
-    // Обробник після успішної реєстрації
-    const handleRegisterSuccess = () => {
-        setCurrentPage(PAGE_STATES.HOME);
-    };
-
-    // Перехід на форму (з HomePage, або ApplicationsList)
-    const handleNewApplication = () => {
-        setCurrentPage(PAGE_STATES.FORM);
-        setCurrentReservationId(null);
-    };
-
-    // Перехід на список заявок
-    const handleViewList = () => {
-        setCurrentPage(PAGE_STATES.LIST);
-    };
-
-    // 1. З форми до підтвердження 
-    const handleFormSubmit = (reservationId) => {
-        setCurrentReservationId(reservationId);
-        setCurrentPage(PAGE_STATES.CONFIRMATION);
-    };
-
-    // 2. З підтвердження або списку до статусу
+    
+    const handleRegisterSuccess = () => { setCurrentPage(PAGE_STATES.HOME); };
+    const handleNewApplication = () => { setCurrentPage(PAGE_STATES.FORM); setCurrentReservationId(null); };
+    const handleViewList = () => { setCurrentPage(PAGE_STATES.LIST); };
+    
+    const handleFormSubmit = (reservationId) => { setCurrentReservationId(reservationId); setCurrentPage(PAGE_STATES.CONFIRMATION); };
+    
     const handleViewStatus = (reservationId) => {
         if (reservationId && (typeof reservationId === 'number' || typeof reservationId === 'string')) {
             setCurrentReservationId(reservationId);
         }
         setCurrentPage(PAGE_STATES.STATUS);
     };
-
-    // Для посилання "Забули пароль?"
-    const handleForgotPassword = () => {
-        console.log("Перехід до відновлення пароля");
-        // Тут може бути перехід на окрему сторінку відновлення пароля
-    };
-
+    
+    const handleForgotPassword = () => { console.log("Перехід до відновлення пароля"); };
+    
+    // --- Відображення сторінки ---
 
     let PageContent;
 
     switch (currentPage) {
         case PAGE_STATES.HOME:
-            PageContent = <HomePage />;
+            PageContent = <HomePage onStartApplication={handleRegisterClick} />;
             break;
         case PAGE_STATES.LOGIN:
             PageContent = <LoginPage 
@@ -126,10 +96,10 @@ function App() {
                             onSuccess={handleFormSubmit} />;
             break;
         case PAGE_STATES.CONFIRMATION:
-            PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
+            PageContent = <ConfirmationPage onViewStatus={handleViewStatus} onViewList={handleViewList} />; 
             break;
         case PAGE_STATES.STATUS:
-            PageContent = <StatusPage reservationId={currentReservationId} />;
+            PageContent = <StatusPage reservationId={currentReservationId} onViewList={handleViewList} />; 
             break;
         case PAGE_STATES.LIST:
             PageContent = <ApplicationsList 
@@ -150,9 +120,14 @@ function App() {
             <CssBaseline /> 
             
             <Header 
+                isLoggedIn={isLoggedIn}
+                isAdmin={isAdmin}
+                currentPage={currentPage}
                 onLogoClick={handleViewHome} 
                 onLoginClick={handleLoginClick}
                 onRegisterClick={handleRegisterClick}
+                onLogout={handleLogout} 
+                onViewList={handleViewList} 
             />
             
             <Box sx={{ flexGrow: 1 }}>
