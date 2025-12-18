@@ -67,7 +67,6 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
             
             setIsEditing(false);
             setComment('');
-            alert("Статус успішно оновлено");
         } catch (err) {
             console.error("Update error:", err);
             alert("Помилка при збереженні даних.");
