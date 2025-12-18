@@ -8,15 +8,16 @@ import {
     Button, 
     CircularProgress, 
     Stack,
-    TextField
+    TextField,
+    Chip
 } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
-import CheckIcon from '@mui/icons-material/Check';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import ReturnButton from '../../components/ReturnButton';
 import { formatDate } from '../../utils/dateUtils';
+import { getStatusConfig } from '../../utils/statusUtils';
 
 const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
@@ -113,19 +114,7 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                         applicationData.reservationStatusName === 'Прийнято' ||
                         applicationData.reservationStatusName === 'Відхилено';
 
-    // Визначення кольору статусу
-    let statusColor;
-    let statusIcon;
-    if (applicationData.reservationStatusName === 'Схвалено' || applicationData.reservationStatusName === 'Прийнято') {
-        statusColor = '#4caf50';
-        statusIcon = <CheckCircleIcon sx={{ fontSize: 18, mr: 0.5 }} />;
-    } else if (applicationData.reservationStatusName === 'Відхилено') {
-        statusColor = '#f44336';
-        statusIcon = <CancelIcon sx={{ fontSize: 18, mr: 0.5 }} />;
-    } else {
-        statusColor = '#2196f3';
-        statusIcon = <CheckIcon sx={{ fontSize: 18, mr: 0.5 }} />;
-    }
+    const statusConfig = getStatusConfig(applicationData.reservationStatusName);
 
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
@@ -171,18 +160,24 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                 </Typography>
                 
                 {/* Статус */}
-                <Box sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    bgcolor: statusColor,
-                    color: 'white',
-                    p: '4px 12px',
-                    borderRadius: '4px',
-                    fontWeight: 'bold',
-                    mb: 3
-                }}>
-                    {statusIcon}
-                    {applicationData.reservationStatusName}
+                <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-start' }}>
+                    <Chip
+                        icon={statusConfig.icon}
+                        label={applicationData.reservationStatusName}
+                        sx={{
+                            bgcolor: statusConfig.bgcolor,
+                            color: statusConfig.color,
+                            fontWeight: 'bold',
+                            border: `1px solid ${statusConfig.color}`,
+                            fontSize: '1.1rem',
+                            height: 28,
+                            '& .MuiChip-icon': {
+                                color: statusConfig.color,
+                                fontSize: 20
+                            }
+                        }}
+                        size="small"
+                    />
                 </Box>
 
                 {/* Коментар та кнопки дій (для нових заявок або в режимі редагування) */}

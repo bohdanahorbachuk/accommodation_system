@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } from '@mui/material';
+import { Container, Grid, Typography, Box, Paper, Button, CircularProgress, Chip } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
-import CheckIcon from '@mui/icons-material/Check';
 import ReturnButton from '../../components/ReturnButton';
 import { formatDate } from '../../utils/dateUtils';
+import { getStatusConfig } from '../../utils/statusUtils';
 
 const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
@@ -46,14 +46,7 @@ const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
         return <Typography color="error" align="center" sx={{ mt: 4 }}>{error}</Typography>;
     }
 
-    let statusColor;
-    if (applicationData.reservationStatusName === 'Прийнято') {
-        statusColor = '#4caf50';
-    } else if (applicationData.reservationStatusName === 'Створено') {
-        statusColor = '#ff9800';
-    } else {
-        statusColor = '#f44336';
-    }
+    const statusConfig = getStatusConfig(applicationData.reservationStatusName);
 
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
@@ -102,18 +95,24 @@ const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
                         </Typography>
                         
                         {/* Статус */}
-                        <Box sx={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            bgcolor: statusColor,
-                            color: 'white',
-                            p: '4px 12px',
-                            borderRadius: '4px',
-                            fontWeight: 'bold',
-                            mb: 3
-                        }}>
-                            <CheckIcon sx={{ fontSize: 18, mr: 0.5 }} />
-                            {applicationData.reservationStatusName}
+                        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-start' }}>
+                            <Chip
+                                icon={statusConfig.icon}
+                                label={applicationData.reservationStatusName}
+                                sx={{
+                                    bgcolor: statusConfig.bgcolor,
+                                    color: statusConfig.color,
+                                    fontWeight: 'bold',
+                                    border: `1px solid ${statusConfig.color}`,
+                                    fontSize: '1.1rem',
+                                    height: 28,
+                                    '& .MuiChip-icon': {
+                                        color: statusConfig.color,
+                                        fontSize: 20
+                                    }
+                                }}
+                                size="small"
+                            />
                         </Box>
 
                         {/* Кнопка завантаження PDF */}

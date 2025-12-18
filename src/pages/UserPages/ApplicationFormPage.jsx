@@ -68,7 +68,7 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: '12px', overflow: 'hidden' }}>
                 {/* Заголовок */}
-                <Typography variant="h4" component="h1" sx={{ color: '#8b0000', fontWeight: 'bold', mb: 3 }}>
+                <Typography variant="h4" component="h1" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 3 }}>
                     Подача заявки
                 </Typography>
 
