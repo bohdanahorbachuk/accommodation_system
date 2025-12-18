@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, TextField, Button, Link, MenuItem } from '@mui/material';
+import { Container, Grid, Typography, Box, TextField, Button, MenuItem } from '@mui/material';
 
 const RegisterPage = ({ onRegisterSuccess }) => {
     const darkBlue = '#001f3f'; // Темно-синій для кнопок
@@ -10,11 +10,38 @@ const RegisterPage = ({ onRegisterSuccess }) => {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [confirmedPassword, setConfirmedPassword] = useState('');
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState(1); // Встановлюємо дефолтну роль на Студент
     const [adminIdentifier, setAdminIdentifier] = useState('');
+    const [error, setError] = useState('');
+
+    const roles = [
+        { id: 1, value: 'student', label: 'Студент' },
+        { id: 2, value: 'admin', label: 'Адміністратор' },
+        { id: 3, value: 'guest', label: 'Гість' }, // Додано Гість
+    ];
+
+    const isIdentifierRequired = (role === 1 || role === 2);
+    const isGuestRole = role === 3;
+
+    const getIdentifierLabel = () => {
+        if (role === 2) return "Ідентифікатор (адміністратор)";
+        if (role === 1) return "Ідентифікатор (студента)";
+        return "Ідентифікатор"; 
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setError('');
+
+        if (password !== confirmedPassword) {
+            setError("Паролі не співпадають.");
+            return;
+        }
+
+        if (isIdentifierRequired && !adminIdentifier) {
+            setError("Поле ідентифікатора є обов'язковим для обраної ролі.");
+            return;
+        }
 
         const postData = {
             name: name,
@@ -24,7 +51,7 @@ const RegisterPage = ({ onRegisterSuccess }) => {
             phoneNumber: phone,
             password: password,
             roleId: role,
-            adminIdentifier: adminIdentifier
+            adminIdentifier: isIdentifierRequired ? adminIdentifier : null
         };
 
         try {
@@ -42,13 +69,9 @@ const RegisterPage = ({ onRegisterSuccess }) => {
             onRegisterSuccess();
         } catch (error) {
             console.error(`Помилка під час надсилання: ${error.message}`);
+            setError(`Помилка реєстрації: ${error.response?.data || error.message}`);
         }
     };
-
-    const roles = [
-        { id: 1, value: 'student', label: 'Студент' },
-        { id: 2, value: 'admin', label: 'Адміністратор' },
-    ];
 
     return (
         <Container maxWidth="lg" sx={{ mt: 8, mb: 8, minHeight: '70vh' }}>
@@ -74,6 +97,12 @@ const RegisterPage = ({ onRegisterSuccess }) => {
                 >
                     Зареєструватись
                 </Typography>
+
+                {error && (
+                    <Typography color="error" sx={{ mb: 2, fontWeight: 'bold' }}>
+                        {error}
+                    </Typography>
+                )}
                 
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                     <Grid container spacing={4} columns={{ xs: 2 }}>
@@ -146,7 +175,10 @@ const RegisterPage = ({ onRegisterSuccess }) => {
                                 variant="outlined"
                                 required
                                 value={role}
-                                onChange={(e) => setRole(e.target.value)}
+                                onChange={(e) => {
+                                    setRole(e.target.value);
+                                    if (e.target.value === 3) setAdminIdentifier(''); // Очищаємо ID для Гостя
+                                }}
                             >
                                 {roles.map((option) => (
                                     <MenuItem key={option.id} value={option.id}>
@@ -155,13 +187,18 @@ const RegisterPage = ({ onRegisterSuccess }) => {
                                 ))}
                             </TextField>
                         
-                            <TextField
-                                fullWidth
-                                label="Ідентифікатор (адміністратор)"
-                                variant="outlined"
-                                value={adminIdentifier}
-                                onChange={(e) => setAdminIdentifier(e.target.value)}
-                            />
+                            {!isGuestRole ? (
+                                <TextField
+                                    fullWidth
+                                    label={getIdentifierLabel()}
+                                    variant="outlined"
+                                    required={isIdentifierRequired}
+                                    value={adminIdentifier}
+                                    onChange={(e) => setAdminIdentifier(e.target.value)}
+                                />
+                            ) : (
+                                <Box sx={{ height: 56, mb: 3 }} /> // Пустий блок
+                            )}
                         </Grid>
                     </Grid>
                     <Button
