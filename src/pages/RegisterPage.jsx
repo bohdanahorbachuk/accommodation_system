@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, TextField, Button, MenuItem } from '@mui/material';
+import { Container, Grid, Typography, Box, TextField, Button, MenuItem, Paper } from '@mui/material';
 
 const RegisterPage = ({ onRegisterSuccess }) => {
     const darkBlue = '#001f3f'; // Темно-синій для кнопок
@@ -20,14 +20,25 @@ const RegisterPage = ({ onRegisterSuccess }) => {
         { id: 3, value: 'guest', label: 'Гість' }, // Додано Гість
     ];
 
+    const inputStyle = {
+    '& .MuiInputBase-root': {
+        borderRadius: '8px',
+        backgroundColor: '#f0f0f0',
+        height: '45px', // Встановіть конкретну висоту, яка вам підходить
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+        border: 'none', // Краще використовувати border: 'none', щоб повністю приховати лінію
+    },
+    // Важливо для селекта: прибираємо зайвий паддінг у самого інпута всередині
+    '& .MuiSelect-select': {
+        paddingTop: '10px',
+        paddingBottom: '10px',
+    },
+    marginBottom: 2,
+};
+
     const isIdentifierRequired = (role === 1 || role === 2);
     const isGuestRole = role === 3;
-
-    const getIdentifierLabel = () => {
-        if (role === 2) return "Ідентифікатор (адміністратор)";
-        if (role === 1) return "Ідентифікатор (студента)";
-        return "Ідентифікатор"; 
-    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -74,27 +85,9 @@ const RegisterPage = ({ onRegisterSuccess }) => {
     };
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 8, mb: 8, minHeight: '70vh' }}>
-            <Box 
-                sx={{ 
-                    bgcolor: 'white', 
-                    p: 4, 
-                    borderRadius: '12px', 
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-                    maxWidth: 800, // Обмежуємо ширину форми
-                    margin: '0 auto' // Центруємо форму
-                }}
-            >
-                <Typography 
-                    variant="h4" 
-                    component="h1" 
-                    gutterBottom
-                    sx={{ 
-                        color: darkBlue, 
-                        fontWeight: 'bold', 
-                        mb: 4 
-                    }}
-                >
+        <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
+            <Paper elevation={3} sx={{ p: 4, borderRadius: '12px', overflow: 'hidden' }}>
+                <Typography variant="h4" component="h1" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 3 }}>
                     Зареєструватись
                 </Typography>
 
@@ -103,123 +96,144 @@ const RegisterPage = ({ onRegisterSuccess }) => {
                         {error}
                     </Typography>
                 )}
-                
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                    <Grid container spacing={4} columns={{ xs: 2 }}>
-                        {/* Ліва колонка */}
-                        <Grid size={{ xs: 1 }}>
-                            <TextField
-                                fullWidth
-                                label="Ім'я"
-                                variant="outlined"
-                                required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                            
-                            <TextField
-                                fullWidth
-                                label="Прізвище"
-                                variant="outlined"
-                                required
-                                value={surname}
-                                onChange={(e) => setSurname(e.target.value)}
-                            />
 
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                variant="outlined"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                <Grid container spacing={4} columns={{ xs: 2 }}>
+                    {/* Ліва колонка */}
+                    <Grid size={{ xs: 1 }}>
+                        <Typography variant="subtitle1" fontWeight="bold">Ім'я</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            sx={inputStyle}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
 
-                            <TextField
-                                fullWidth
-                                label="Номер телефону"
-                                variant="outlined"
-                                required
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                            />
-                        </Grid>
+                        <Typography variant="subtitle1" fontWeight="bold">Прізвище</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            sx={inputStyle}
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
+                        />
 
-                        {/* Права колонка */}
-                        <Grid size={{ xs: 1 }}>
-                            <TextField
-                                fullWidth
-                                label="Пароль"
-                                variant="outlined"
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                        <Typography variant="subtitle1" fontWeight="bold">Email</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            sx={inputStyle}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
 
-                            <TextField
-                                fullWidth
-                                label="Повторити пароль"
-                                variant="outlined"
-                                type="password"
-                                required
-                                value={confirmedPassword}
-                                onChange={(e) => setConfirmedPassword(e.target.value)}
-                            />
-                        
-                            <TextField 
-                                select
-                                fullWidth 
-                                label="Роль" 
-                                variant="outlined"
-                                required
-                                value={role}
-                                onChange={(e) => {
-                                    setRole(e.target.value);
-                                    if (e.target.value === 3) setAdminIdentifier(''); // Очищаємо ID для Гостя
-                                }}
-                            >
-                                {roles.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        
-                            {!isGuestRole ? (
+                        <Typography variant="subtitle1" fontWeight="bold">Номер телефону</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            sx={inputStyle}
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                    </Grid>
+
+                    {/* Права колонка */}
+                    <Grid size={{ xs: 1 }}>
+
+                        {/* Період поселення */}
+                        <Typography variant="subtitle1" fontWeight="bold">Пароль</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            type ="password"
+                            sx={inputStyle}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+
+                        {/* Обрати місце */}
+                        <Typography variant="subtitle1" fontWeight="bold">Повторити пароль</Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            type="password"
+                            sx={inputStyle}
+                            value={confirmedPassword}
+                            onChange={(e) => setConfirmedPassword(e.target.value)}
+                        />
+
+                        <Typography variant="subtitle1" fontWeight="bold">Роль</Typography>
+                        <TextField 
+                            select
+                            fullWidth
+                            variant="outlined"
+                            required
+                            sx={inputStyle}
+                            value={role}
+                            SelectProps={{
+                                sx: { 
+                                    paddingTop: 0, 
+                                    paddingBottom: 0,
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }
+                            }}
+                            onChange={(e) => {
+                                setRole(e.target.value);
+                                if (e.target.value === 3) setAdminIdentifier(''); // Очищаємо ID для Гостя
+                            }}
+                        >
+                            {roles.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+
+                        {!isGuestRole ? (
+                            <>
+                                <Typography variant="subtitle1" fontWeight="bold">Ідентифікатор</Typography>
                                 <TextField
                                     fullWidth
-                                    label={getIdentifierLabel()}
                                     variant="outlined"
+                                    sx={inputStyle}
                                     required={isIdentifierRequired}
                                     value={adminIdentifier}
                                     onChange={(e) => setAdminIdentifier(e.target.value)}
-                                />
+                                    />
+                            </>
                             ) : (
-                                <Box sx={{ height: 56, mb: 3 }} /> // Пустий блок
-                            )}
-                        </Grid>
+                            <Box sx={{ height: 56, mb: 3 }} />
+                        )}
                     </Grid>
-                    <Button
-                        fullWidth
-                        type="submit"
-                        variant="contained"
-                        size="large"
-                        sx={{
-                            backgroundColor: darkBlue,
-                            '&:hover': { backgroundColor: '#003366' },
-                            fontWeight: 'bold',
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            py: 1.5,
-                            mt: 4,
-                        }}
-                    >
-                        Зареєструватись
-                    </Button>
-                </Box>
-            </Box>
+                </Grid>
+                
+                <Button
+                    fullWidth
+                    onClick={handleSubmit}
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                        backgroundColor: darkBlue,
+                        '&:hover': { backgroundColor: '#003366' },
+                        fontWeight: 'bold',
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        py: 1.5,
+                        mt: 4,
+                    }}
+                >
+                    Зареєструватись
+                </Button>
+
+            </Paper>
         </Container>
     );
 };

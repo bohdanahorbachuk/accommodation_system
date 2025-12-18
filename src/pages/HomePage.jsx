@@ -2,7 +2,7 @@ import { Container, Grid, Typography, Box } from '@mui/material';
 import HomeIllustration from '../components/HomeIllustration';
 
 const HomePage = () => {
-    const primaryColor = '#8b0000'; // Бордовий колір для заголовка
+    const primaryColor = '#8b0000';
 
     return (
         <Container maxWidth="lg" sx={{ mt: 8, mb: 8, minHeight: '70vh' }}>
