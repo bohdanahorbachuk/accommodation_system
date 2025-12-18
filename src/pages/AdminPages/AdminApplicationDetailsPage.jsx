@@ -15,9 +15,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
-import ReturnButton from '../components/ReturnButton';
+import ReturnButton from '../../components/ReturnButton';
 
-const AdminApplicationDetails = ({ reservationId, onBack }) => {
+const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -307,5 +307,5 @@ const AdminApplicationDetails = ({ reservationId, onBack }) => {
     );
 }
 
-export default AdminApplicationDetails;
+export default AdminApplicationDetailsPage;
 

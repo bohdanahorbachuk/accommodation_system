@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { CssBaseline, Box, Typography } from "@mui/material";
 
 import HomePage from "./src/pages/HomePage"; 
-import ApplicationForm from "./src/components/ApplicationForm"; 
-import ConfirmationPage from "./src/pages/ConfirmationPage"; 
-import StatusPage from "./src/pages/StatusPage"; 
-import ApplicationsList from "./src/components/ApplicationsList";
-import Header from "./src/components/Header"; 
-import AdminApplicationsList from './src/components/AdminApplicationsList';
-import AdminApplicationDetails from "./src/pages/AdminApplicationDetails";
 import LoginPage from "./src/pages/LoginPage";
 import RegisterPage from "./src/pages/RegisterPage";
+import ApplicationForm from "./src/pages/UserPages/ApplicationFormPage"; 
+import ConfirmationPage from "./src/pages/UserPages/ConfirmationPage"; 
+import UserApplicationsListPage from "./src/pages/UserPages/UserApplicationsListPage";
+import UserApplicationDetailsPage from "./src/pages/UserPages/UserApplicationDetailsPage"; 
+import AdminApplicationsListPage from './src/pages/AdminPages/AdminApplicationsListPage';
+import AdminApplicationDetailsPage from "./src/pages/AdminPages/AdminApplicationDetailsPage";
+import Header from "./src/components/Header";
 import Footer from "./src/components/Footer";
 
 const USER_ROLES = {
@@ -165,23 +165,23 @@ function App() {
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
             break;
         case PAGE_STATES.STATUS:
-            PageContent = <StatusPage
+            PageContent = <UserApplicationDetailsPage
                 reservationId={currentReservationId}
                 onBack={handleBackToReservationsList}
             />;
             break;
         case PAGE_STATES.LIST:
-            PageContent = <ApplicationsList 
+            PageContent = <UserApplicationsListPage 
                             userId={authData?.userId}
                             onNewApplication={handleNewApplication} 
                             onStatusView={handleViewStatus} 
                         />;
             break;
         case PAGE_STATES.ADMIN_DASHBOARD:
-            PageContent = <AdminApplicationsList onStatusView={handleViewAdminApplicationDetails} />;
+            PageContent = <AdminApplicationsListPage onStatusView={handleViewAdminApplicationDetails} />;
             break;
         case PAGE_STATES.ADMIN_APPLICATION_DETAILS:
-            PageContent = <AdminApplicationDetails 
+            PageContent = <AdminApplicationDetailsPage 
                             reservationId={currentReservationId} 
                             onBack={handleBackToAdminDashboard}
                           />;

@@ -12,9 +12,9 @@ import {
     MenuItem,
 } from '@mui/material';
 import { Sort as SortIcon, FilterList as FilterListIcon} from '@mui/icons-material';
-import ApplicationCard from './ApplicationCard';
+import ApplicationCard from '../../components/ApplicationCard';
 
-const AdminApplicationsList = ({ onStatusView }) => {
+const AdminApplicationsListPage = ({ onStatusView }) => {
     const StatusMap = {
         New: 1,
         Approved: 3,
@@ -201,5 +201,5 @@ const AdminApplicationsList = ({ onStatusView }) => {
     );
 }
 
-export default AdminApplicationsList;
+export default AdminApplicationsListPage;
 

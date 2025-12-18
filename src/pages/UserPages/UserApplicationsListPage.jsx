@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Grid, Typography, Box, Button } from '@mui/material';
-import ApplicationCard from './ApplicationCard';
+import ApplicationCard from '../../components/ApplicationCard';
 
 
-const ApplicationsList = ({ userId, onNewApplication, onStatusView }) => {
+const UserApplicationsListPage = ({ userId, onNewApplication, onStatusView }) => {
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -121,4 +121,4 @@ const ApplicationsList = ({ userId, onNewApplication, onStatusView }) => {
     );
 }
 
-export default ApplicationsList;
+export default UserApplicationsListPage;

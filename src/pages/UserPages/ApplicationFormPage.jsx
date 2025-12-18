@@ -2,9 +2,9 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Container, Grid, Typography, TextField, Button, Box, Paper } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
-import ReturnButton from './ReturnButton';
+import ReturnButton from '../../components/ReturnButton';
 
-const ApplicationForm = ({ userId, onSuccess, onBack }) => { 
+const ApplicationFormPage = ({ userId, onSuccess, onBack }) => { 
     const [room, setRoom] = useState('');
     const [place, setPlace] = useState('');
     const [reason, setReason] = useState('');
@@ -220,4 +220,4 @@ const ApplicationForm = ({ userId, onSuccess, onBack }) => {
     );
 }
 
-export default ApplicationForm;
+export default ApplicationFormPage;

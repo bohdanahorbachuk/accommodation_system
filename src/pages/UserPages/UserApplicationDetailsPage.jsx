@@ -3,9 +3,9 @@ import axios from 'axios';
 import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CheckIcon from '@mui/icons-material/Check';
-import ReturnButton from '../components/ReturnButton';
+import ReturnButton from '../../components/ReturnButton';
 
-const StatusPage = ({ reservationId, onBack }) => {
+const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -150,4 +150,4 @@ const StatusPage = ({ reservationId, onBack }) => {
     );
 }
 
-export default StatusPage;
+export default UserApplicationDetailsPage;
