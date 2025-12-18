@@ -1,6 +1,5 @@
 import { Container, Grid, Typography, Box } from '@mui/material';
-// import DormIllustration from './DormIllustration'; // Для реальної ілюстрації
-import HomeIllustration from '../components/HomeIllustration'; // Використовуємо тимчасову ілюстрацію
+import HomeIllustration from '../components/HomeIllustration';
 
 const HomePage = () => {
     const primaryColor = '#8b0000'; // Бордовий колір для заголовка

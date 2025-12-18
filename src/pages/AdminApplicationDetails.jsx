@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
     Container, 
     Typography, 
@@ -29,52 +30,55 @@ const AdminApplicationDetails = ({ reservationId, onBack }) => {
             return;
         }
 
-        // Захардкоджені дані для тестування
-        const hardcodedData = {
-            reservationId: reservationId,
-            fullName: 'Іванов Іван Іванович',
-            roomId: 101,
-            bedId: 1,
-            phoneNumber: '+380501234567',
-            reservationStartDate: '01.02.2024',
-            reservationEndDate: '31.05.2024',
-            reservationStatusName: 'Нова',
-            createdAt: '2024-01-15T10:30:00Z'
+        const fetchReservationDetails = async () => {
+            try {
+                const response = await axios.get(`https://localhost:7193/api/reservations/${reservationId}`);
+                setApplicationData(response.data);
+                setError(null);
+            } catch (err) {
+                console.error("Помилка при отриманні деталей:", err);
+                setError("Не вдалося завантажити деталі заявки.");
+            } finally {
+                setLoading(false);
+            }
         };
 
-        // Симулюємо затримку завантаження
-        setTimeout(() => {
-            setApplicationData(hardcodedData);
-            setLoading(false);
-        }, 500);
+        fetchReservationDetails();
     }, [reservationId]);
 
-    const handleApprove = () => {
-        console.log('Заявка прийнята:', reservationId);
-        console.log('Коментар:', comment || '(без коментаря)');
-        // Тут буде логіка прийняття заявки
-        if (applicationData) {
+    const updateStatus = async (statusId, statusName) => {
+        try {
+            const payload = {
+                statusId: statusId,
+                adminComment: comment
+            };
+
+            await axios.put(`https://localhost:7193/api/reservations/${reservationId}`, payload);
+
+            // Update local state to reflect changes without a full refresh
             setApplicationData({
                 ...applicationData,
-                reservationStatusName: 'Схвалено'
+                reservationStatusName: statusName,
+                adminComment: comment // assuming you want to store the comment locally too
             });
+            
             setIsEditing(false);
             setComment('');
+            alert("Статус успішно оновлено");
+        } catch (err) {
+            console.error("Update error:", err);
+            alert("Помилка при збереженні даних.");
+        } finally {
         }
     };
 
+    // 3. Action Handlers mapping to your specific Status IDs
+    const handleApprove = () => {
+        updateStatus(3, 'Схвалено'); 
+    };
+
     const handleReject = () => {
-        console.log('Заявка відхилена:', reservationId);
-        console.log('Коментар:', comment || '(без коментаря)');
-        // Тут буде логіка відхилення заявки
-        if (applicationData) {
-            setApplicationData({
-                ...applicationData,
-                reservationStatusName: 'Відхилено'
-            });
-            setIsEditing(false);
-            setComment('');
-        }
+        updateStatus(4, 'Відхилено');
     };
 
     const handleEdit = () => {
@@ -227,7 +231,7 @@ const AdminApplicationDetails = ({ reservationId, onBack }) => {
                             
                             {/* Кнопка "Відхилити" - показуємо якщо не відхилено або редагуємо схвалену */}
                             {(!isEditing && applicationData.reservationStatusName !== 'Відхилено') || 
-                             (isEditing && applicationData.reservationStatusName === 'Схвалено') ? (
+                             (isEditing && applicationData.reservationStatusName === 'Прийнято') ? (
                                 <Button
                                     variant="contained"
                                     startIcon={<CancelIcon />}
@@ -243,7 +247,7 @@ const AdminApplicationDetails = ({ reservationId, onBack }) => {
                                         textTransform: 'none'
                                     }}
                                 >
-                                    {isEditing && applicationData.reservationStatusName === 'Схвалено' ? 'Змінити на Відхилено' : 'Відхилити заявку'}
+                                    {isEditing && applicationData.reservationStatusName === 'Прийнято' ? 'Змінити на Відхилено' : 'Відхилити заявку'}
                                 </Button>
                             ) : null}
                             

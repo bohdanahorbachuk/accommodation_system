@@ -19,8 +19,6 @@ const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
         try {
             var response = await axios.post('https://localhost:7193/api/auth/login', postData);
 
-            console.log(response.data);
-
             const responseData = {
                 accessToken: response.data.accessToken,
                 userId: response.data.user.id,

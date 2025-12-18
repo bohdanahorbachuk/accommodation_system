@@ -16,6 +16,7 @@ import Footer from "./src/components/Footer";
 const USER_ROLES = {
     STUDENT: 1,
     ADMIN: 2,
+    GUEST: 3
 };
 
 // Всі можливі стани сторінок

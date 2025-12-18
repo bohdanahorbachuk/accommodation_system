@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
     Container, 
     Grid, 
@@ -31,7 +32,7 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reser
     // Визначення кольору та іконки для статусу
     const getStatusConfig = (status) => {
         switch (status) {
-            case 'Схвалено':
+            case 'Прийнято':
                 return {
                     color: '#4caf50',
                     bgcolor: '#e8f5e9',
@@ -43,7 +44,7 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reser
                     bgcolor: '#ffebee',
                     icon: <Cancel sx={{ fontSize: 16, mr: 0.5 }} />
                 };
-            case 'Нова':
+            case 'Створено':
             default:
                 return {
                     color: '#2196f3',
@@ -53,7 +54,7 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reser
         }
     };
 
-    const statusConfig = getStatusConfig(reservationStatusName || 'Нова');
+    const statusConfig = getStatusConfig(reservationStatusName);
 
     return (
         <Card 
@@ -80,7 +81,7 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reser
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-start' }}>
                     <Chip
                         icon={statusConfig.icon}
-                        label={reservationStatusName || 'Нова'}
+                        label={reservationStatusName}
                         sx={{
                             bgcolor: statusConfig.bgcolor,
                             color: statusConfig.color,
@@ -121,61 +122,41 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reser
 
 // Компонент сторінки "Всі заявки" для адміністратора
 const AdminApplicationsList = ({ onStatusView }) => {
+    const StatusMap = {
+        New: 1,
+        Approved: 3,
+        Rejected: 4,
+        All: null
+    };
+
     const [reservations, setReservations] = useState([]);
     const [filteredAndSortedReservations, setFilteredAndSortedReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState('dateDesc'); // 'dateDesc', 'dateAsc', 'createdDesc', 'createdAsc'
-    const [statusFilter, setStatusFilter] = useState('Нова'); // 'Нова', 'Схвалено', 'Відхилено', 'Всі'
+    const [statusFilter, setStatusFilter] = useState(StatusMap.New); 
 
-    useEffect(() => {
-        // Захардкоджений список заявок
-        const hardcodedReservations = [
-            {
-                reservationId: 1,
-                createdAt: '2024-01-15T10:30:00Z',
-                reservationStartDate: '2024-02-01T00:00:00Z',
-                reservationStatusName: 'Нова'
-            },
-            {
-                reservationId: 2,
-                createdAt: '2024-01-20T14:20:00Z',
-                reservationStartDate: '2024-02-15T00:00:00Z',
-                reservationStatusName: 'Схвалено'
-            },
-            {
-                reservationId: 3,
-                createdAt: '2024-01-10T09:15:00Z',
-                reservationStartDate: '2024-01-25T00:00:00Z',
-                reservationStatusName: 'Відхилено'
-            },
-            {
-                reservationId: 4,
-                createdAt: '2024-01-25T16:45:00Z',
-                reservationStartDate: '2024-03-01T00:00:00Z',
-                reservationStatusName: 'Нова'
-            },
-            {
-                reservationId: 5,
-                createdAt: '2024-01-05T11:00:00Z',
-                reservationStartDate: '2024-01-20T00:00:00Z',
-                reservationStatusName: 'Схвалено'
-            },
-            {
-                reservationId: 6,
-                createdAt: '2024-01-30T13:30:00Z',
-                reservationStartDate: '2024-03-15T00:00:00Z',
-                reservationStatusName: 'Відхилено'
+    
+     useEffect(() => {        
+        const loadApplications = async () => {
+            try {
+                setIsLoading(true);
+                const queryParam = statusFilter !== null ? `?statusId=${statusFilter}` : '';
+                const apiUrl = `https://localhost:7193/api/reservations${queryParam}`;
+                const response = await axios.get(apiUrl);
+                setReservations(response.data);
+            } catch (err) {
+                console.error("Помилка завантаження заявок:", err);
+                setError('Не вдалося завантажити дані. Спробуйте пізніше.');
+                setReservations([]); // Очищуємо список у разі помилки
+            } finally {
+                setIsLoading(false);
             }
-        ];
+        };
 
-        setIsLoading(true);
-        // Симулюємо затримку завантаження
-        setTimeout(() => {
-            setReservations(hardcodedReservations);
-            setIsLoading(false);
-        }, 500);
-    }, []);
+        loadApplications();
+    }, [statusFilter]);
+
 
     // Фільтрація та сортування заявок
     useEffect(() => {
@@ -276,15 +257,15 @@ const AdminApplicationsList = ({ onStatusView }) => {
                     <Select
                         labelId="filter-select-label"
                         id="filter-select"
-                        value={statusFilter}
-                        onChange={handleStatusFilterChange}
+                        value={statusFilter ?? ''} // Тут тепер буде зберігатися ID (наприклад, 1, 2)
+                        onChange={(e) => setStatusFilter(e.target.value === '' ? null : e.target.value)}
                         label="Фільтр за статусом"
                         startAdornment={<FilterListIcon sx={{ mr: 1, color: '#001f3f' }} />}
                     >
-                        <MenuItem value="Нова">Нові</MenuItem>
-                        <MenuItem value="Схвалено">Схвалені</MenuItem>
-                        <MenuItem value="Відхилено">Відхилені</MenuItem>
-                        <MenuItem value="Всі">Всі заявки</MenuItem>
+                        <MenuItem value={1}>Нові</MenuItem>
+                        <MenuItem value={3}>Схвалені</MenuItem>
+                        <MenuItem value={4}>Відхилені</MenuItem>
+                        <MenuItem value="">Всі заявки</MenuItem> 
                     </Select>
                 </FormControl>
                 
@@ -316,19 +297,13 @@ const AdminApplicationsList = ({ onStatusView }) => {
             </Box>
 
             {/* Сітка з картками заявок */}
-            {filteredAndSortedReservations.length === 0 ? (
-                <Typography variant="h6" color="text.secondary" sx={{ textAlign: 'center', mt: 4 }}>
-                    Заявок з обраним статусом не знайдено
-                </Typography>
-            ) : (
-                <Grid container spacing={3}>
-                    {filteredAndSortedReservations.map((reservation) => (
-                        <Grid item xs={12} sm={6} md={4} key={reservation.reservationId}>
-                            <ApplicationCard {...reservation} onStatusView={onStatusView} />
-                        </Grid>
-                    ))}
-                </Grid>
-            )}
+            <Grid container spacing={3}>
+                {reservations.map((reservation) => (
+                    <Grid item xs={12} sm={6} md={4} key={reservation.reservationId}>
+                        <ApplicationCard {...reservation} onStatusView={onStatusView} />
+                    </Grid>
+                ))}
+            </Grid>
         </Container>
     );
 }
