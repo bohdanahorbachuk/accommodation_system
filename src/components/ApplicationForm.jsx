@@ -2,8 +2,9 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Container, Grid, Typography, TextField, Button, Box, Paper } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import ReturnButton from './ReturnButton';
 
-const ApplicationForm = ({ userId, onSuccess }) => { 
+const ApplicationForm = ({ userId, onSuccess, onBack }) => { 
     const [room, setRoom] = useState('');
     const [place, setPlace] = useState('');
     const [reason, setReason] = useState('');
@@ -164,10 +165,13 @@ const ApplicationForm = ({ userId, onSuccess }) => {
                                     fontWeight: 'bold',
                                     padding: '10px 30px',
                                     borderRadius: '8px',
+                                    width: '100%',
                                 }}
                             >
                                 Подати заявку
                             </Button>
+
+                            <ReturnButton onClick={onBack} />
                         </Box>
                     </Grid>
 

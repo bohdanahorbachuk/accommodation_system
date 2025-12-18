@@ -1,59 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, Card, CardContent, Button, Divider } from '@mui/material';
+import { Container, Grid, Typography, Box, Button } from '@mui/material';
+import ApplicationCard from './ApplicationCard';
 
-const DateDisplay = (dateString) => {
-  const dateObject = new Date(dateString);
 
-  const day = String(dateObject.getDate()).padStart(2, '0');
-  const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-  const year = dateObject.getFullYear();
-
-  const formattedDate = `${day}.${month}.${year}`;
-
-  return formattedDate;
-};
-
-const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, onStatusView }) => (
-    <Card 
-        sx={{ 
-            borderRadius: '12px', 
-            height: '100%', 
-            display: 'flex', 
-            flexDirection: 'column',
-            boxShadow: 3
-        }}
-    >
-        <CardContent sx={{ flexGrow: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-                Заявка на послення {DateDisplay(createdAt)}
-            </Typography>
-            
-            {/* Головна дата */}
-            <Typography variant="h4" component="div" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 2 }}>
-                {DateDisplay(reservationStartDate)}
-            </Typography>
-            
-            {/* Кнопка статусу */}
-            <Button 
-                variant="outlined" 
-                onClick={() => onStatusView(reservationId)}
-                sx={{ 
-                    borderColor: '#001f3f',
-                    color: '#001f3f',
-                    '&:hover': {
-                        borderColor: '#003366',
-                        bgcolor: 'rgba(0, 31, 63, 0.04)'
-                    }
-                }}
-            >
-                Переглянути статус
-            </Button>
-        </CardContent>
-    </Card>
-);
-
-// Компонент сторінки "Мої заявки"
 const ApplicationsList = ({ userId, onNewApplication, onStatusView }) => {
     const [reservations, setReservations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

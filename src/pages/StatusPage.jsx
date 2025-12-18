@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CheckIcon from '@mui/icons-material/Check';
+import ReturnButton from '../components/ReturnButton';
 
 const StatusPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
@@ -133,27 +134,7 @@ const StatusPage = ({ reservationId, onBack }) => {
                             Завантажити підтвердження про поселення (PDF)
                         </Button>
 
-                        {/* Кнопка повернення */}
-                        <Button
-                            variant="outlined"
-                            onClick={onBack}
-                            sx={{
-                                mt: 2,
-                                borderColor: '#001f3f',
-                                color: '#001f3f',
-                                '&:hover': {
-                                    borderColor: '#003366',
-                                    bgcolor: 'rgba(0, 31, 63, 0.04)'
-                                },
-                                fontWeight: 'bold',
-                                py: 1,
-                                borderRadius: '8px',
-                                textTransform: 'none',
-                                width: '100%'
-                            }}
-                        >
-                            Повернутися до списку заявок
-                        </Button>
+                        <ReturnButton onClick={onBack} />
                     </Paper>
                 </Grid>
 
