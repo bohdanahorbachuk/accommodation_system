@@ -16,6 +16,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import ReturnButton from '../../components/ReturnButton';
+import { formatDate } from '../../utils/dateUtils';
 
 const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
@@ -154,7 +155,7 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                     Дата поселення
                 </Typography>
                 <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                    {applicationData.reservationStartDate}
+                    {formatDate(applicationData.reservationStartDate)}
                 </Typography>
 
                 {/* Дата виселення */}
@@ -162,7 +163,7 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                     Дата виселення
                 </Typography>
                 <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                    {applicationData.reservationEndDate}
+                    {formatDate(applicationData.reservationEndDate)}
                 </Typography>
 
                 <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>

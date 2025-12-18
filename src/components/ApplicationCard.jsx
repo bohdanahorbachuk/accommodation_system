@@ -7,19 +7,9 @@ import {
     Button, 
     Chip
 } from '@mui/material';
+import { formatDate } from '../utils/dateUtils';
 
 const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reservationStatusName, onStatusView }) => {
-    const DateDisplay = (dateString) => {
-        const dateObject = new Date(dateString);
-
-        const day = String(dateObject.getDate()).padStart(2, '0');
-        const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-        const year = dateObject.getFullYear();
-
-        const formattedDate = `${day}.${month}.${year}`;
-
-        return formattedDate;
-    };
 
     const getStatusConfig = (status) => {
         switch (status) {
@@ -60,12 +50,12 @@ const ApplicationCard = ({ reservationId, createdAt, reservationStartDate, reser
         >
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', mb: 1.5 }}>
-                    Заявка на поселення {DateDisplay(createdAt)}
+                    Заявка на поселення {formatDate(createdAt)}
                 </Typography>
                 
                 {/* Головна дата */}
                 <Typography variant="h5" component="div" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 2 }}>
-                    {DateDisplay(reservationStartDate)}
+                    {formatDate(reservationStartDate)}
                 </Typography>
                 
                 {/* Статус */}

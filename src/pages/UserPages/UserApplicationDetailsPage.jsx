@@ -4,6 +4,7 @@ import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } fro
 import DescriptionIcon from '@mui/icons-material/Description';
 import CheckIcon from '@mui/icons-material/Check';
 import ReturnButton from '../../components/ReturnButton';
+import { formatDate } from '../../utils/dateUtils';
 
 const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
@@ -85,7 +86,7 @@ const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
                             Дата поселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.reservationStartDate}
+                            {formatDate(applicationData.reservationStartDate)}
                         </Typography>
 
                          {/* Дата виселення */}
@@ -93,7 +94,7 @@ const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
                             Дата виселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.reservationEndDate}
+                            {formatDate(applicationData.reservationEndDate)}
                         </Typography>
 
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
