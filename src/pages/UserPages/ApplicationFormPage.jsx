@@ -88,6 +88,7 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
 
     const currentRoomData = availableOptions.find(r => r.roomId === room);
     const availableBeds = currentRoomData ? currentRoomData.availableBeds : [];
+    const isError = checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate);
 
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
@@ -161,6 +162,8 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
                             sx={inputStyle}
                             value={checkOutDate}
                             onChange={(e) => setCheckOutDate(e.target.value)}
+                            error={isError} // Робить поле червоним
+                            helperText={isError ? "Дата виселення має бути пізнішою за дату заселення" : ""}
                         />
 
                         {/* Обрати місце */}

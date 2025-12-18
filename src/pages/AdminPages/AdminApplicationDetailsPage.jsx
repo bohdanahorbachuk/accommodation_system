@@ -9,7 +9,8 @@ import {
     CircularProgress, 
     Stack,
     TextField,
-    Chip
+    Chip,
+    Tooltip
 } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -160,23 +161,44 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                 
                 {/* Статус */}
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-start' }}>
-                    <Chip
-                        icon={statusConfig.icon}
-                        label={applicationData.reservationStatusName}
-                        sx={{
-                            bgcolor: statusConfig.bgcolor,
-                            color: statusConfig.color,
-                            fontWeight: 'bold',
-                            border: `1px solid ${statusConfig.color}`,
-                            fontSize: '1.1rem',
-                            height: 28,
-                            '& .MuiChip-icon': {
+                    <Tooltip 
+                        title={applicationData.adminComment} 
+                        arrow 
+                        placement="right"
+                        enterDelay={150}
+                        slotProps={{
+                            tooltip: {
+                            sx: {
+                                bgcolor: statusConfig.color,
+                                color: '#ffffff',
+                                fontSize: '0.7rem',
+                                boxShadow: 3, 
+                                p: 1.5, 
+                                '& .MuiTooltip-arrow': {
                                 color: statusConfig.color,
-                                fontSize: 20
-                            }
+                                },
+                            },
+                            },
                         }}
-                        size="small"
-                    />
+                    >
+                        <Chip
+                            icon={statusConfig.icon}
+                            label={applicationData.reservationStatusName}
+                            sx={{
+                                bgcolor: statusConfig.bgcolor,
+                                color: statusConfig.color,
+                                fontWeight: 'bold',
+                                border: `1px solid ${statusConfig.color}`,
+                                fontSize: '1.1rem',
+                                height: 28,
+                                '& .MuiChip-icon': {
+                                    color: statusConfig.color,
+                                    fontSize: 20
+                                }
+                            }}
+                            size="small"
+                        />
+                    </Tooltip>
                 </Box>
 
                 {/* Коментар та кнопки дій (для нових заявок або в режимі редагування) */}
