@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CssBaseline, Box } from "@mui/material";
+import { CssBaseline, Box, Typography } from "@mui/material";
 
 import HomePage from "./src/pages/HomePage"; 
 import ApplicationForm from "./src/components/ApplicationForm"; 
@@ -11,6 +11,7 @@ import AdminDashboard from "./src/components/AdminDashboard";
 import AdminApplicationDetails from "./src/pages/AdminApplicationDetails";
 import LoginPage from "./src/pages/LoginPage";
 import RegisterPage from "./src/pages/RegisterPage";
+import Footer from "./src/components/Footer";
 
 const USER_ROLES = {
     STUDENT: 1,
@@ -27,17 +28,16 @@ const PAGE_STATES = {
     CONFIRMATION: 'confirmation',
     STATUS: 'status',
     ADMIN_DASHBOARD: 'admin_dashboard',
-    ADMIN_APPLICATION_DETAILS: 'admin_application_details'
+    ADMIN_APPLICATION_DETAILS: 'admin_application_details',
+    FAQ: 'faq'
 };
 
 function App() {
-    // Захардкоджені дані адміністратора
-    const [authData, setAuthData] = useState({
-        accessToken: 'hardcoded-admin-token',
-        userId: 1,
-        userRole: USER_ROLES.ADMIN // 2
-    });
-    const [currentPage, setCurrentPage] = useState(PAGE_STATES.ADMIN_DASHBOARD);
+    const [authData, setAuthData] = useState(null); 
+
+    // --- Допоміжні змінні ---
+    const isLoggedIn = !!authData; 
+    const [currentPage, setCurrentPage] = useState(PAGE_STATES.HOME);
     const [currentReservationId, setCurrentReservationId] = useState(null);
     
     // --- Функції перемикання ---
@@ -54,6 +54,12 @@ function App() {
     // Перехід на сторінку реєстрації
     const handleRegisterClick = () => {
         setCurrentPage(PAGE_STATES.REGISTER);
+    };
+
+    const handleLogout = () =>
+    {
+        setAuthData(null);
+        setCurrentPage(PAGE_STATES.HOME);
     };
 
     // Обробник після успішного входу
@@ -114,10 +120,18 @@ function App() {
         setCurrentPage(PAGE_STATES.ADMIN_DASHBOARD);
     };
 
+    const handleBackToReservationsList = () => {
+        setCurrentPage(PAGE_STATES.LIST);
+    };
+
     // Для посилання "Забули пароль?"
     const handleForgotPassword = () => {
         console.log("Перехід до відновлення пароля");
         // Тут може бути перехід на окрему сторінку відновлення пароля
+    };
+
+    const handleFaqClick = () => {
+        setCurrentPage(PAGE_STATES.FAQ);
     };
 
 
@@ -149,7 +163,10 @@ function App() {
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
             break;
         case PAGE_STATES.STATUS:
-            PageContent = <StatusPage reservationId={currentReservationId} />;
+            PageContent = <StatusPage
+                reservationId={currentReservationId}
+                onBack={handleBackToReservationsList}
+            />;
             break;
         case PAGE_STATES.LIST:
             PageContent = <ApplicationsList 
@@ -167,24 +184,37 @@ function App() {
                             onBack={handleBackToAdminDashboard}
                           />;
             break;
+        case PAGE_STATES.FAQ: // НОВИЙ CASE ДЛЯ FOOTER
+            PageContent = <Typography variant="h3" sx={{ m: 5, textAlign: 'center' }}>Поширені запитання (FAQ) - TODO</Typography>;
+            break;
         default:
             PageContent = <HomePage onStartApplication={handleRegisterClick} />;
     }
 
     return (
-        <>
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <CssBaseline /> 
-            
+
+            {/* 1. HEADER (Надсилаємо лише потрібні пропси) */}
             <Header 
-                onLogoClick={handleViewHome} 
+                isLoggedIn={isLoggedIn}
+                currentPage={currentPage}
                 onLoginClick={handleLoginClick}
                 onRegisterClick={handleRegisterClick}
+                onLogout={handleLogout} 
+                onHomeClick={handleViewHome}
             />
-            
-            <Box sx={{ flexGrow: 1 }}>
+
+            {/* 2. ОСНОВНИЙ КОНТЕНТ (Займає весь простір) */}
+            <Box component="main" sx={{ flexGrow: 1 }}>
                 {PageContent}
             </Box>
-        </>
+
+            {/* 3. FOOTER */}
+            <Footer 
+                onFaqClick={handleFaqClick} // Обробка кліку на "Поширені запитання"
+            />
+        </Box>
     );
 }
 
