@@ -76,7 +76,7 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
 
     // 3. Action Handlers mapping to your specific Status IDs
     const handleApprove = () => {
-        updateStatus(3, 'Схвалено'); 
+        updateStatus(3, 'Прийнято'); 
     };
 
     const handleReject = () => {
@@ -132,7 +132,7 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
 
                 {/* Інформація про кімнату та телефон */}
                 <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
-                    Кімната № {applicationData.roomId}, місце № {applicationData.bedId}
+                    Кімната № {applicationData.roomNumber}, місце № {applicationData.bedNumber}
                 </Typography>
                 <Typography variant="body1" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
                     {applicationData.phoneNumber}

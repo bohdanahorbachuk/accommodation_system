@@ -68,7 +68,7 @@ const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
 
                         {/* Інформація про кімнату та телефон */}
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
-                            Кімната № {applicationData.roomId}, місце № {applicationData.bedId}
+                            Кімната № {applicationData.roomNumber}, місце № {applicationData.bedNumber}
                         </Typography>
                         <Typography variant="body1" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
                             {applicationData.phoneNumber}
