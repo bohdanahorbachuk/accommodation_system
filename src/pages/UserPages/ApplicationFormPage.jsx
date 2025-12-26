@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useState , useEffect} from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, TextField, Button, Box, Paper } from '@mui/material';
+import { Container, Grid, Typography, TextField, Button, Box, Paper, FormControl, Select, MenuItem } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import ReturnButton from '../../components/ReturnButton';
 
-const ApplicationForm = ({ userId, onSuccess }) => { 
+const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
     const [room, setRoom] = useState('');
     const [place, setPlace] = useState('');
     const [reason, setReason] = useState('');
     const [checkInDate, setCheckInDate] = useState('');
     const [checkOutDate, setCheckOutDate] = useState('');
+
+    const [availableOptions, setAvailableOptions] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const dateToISO = (dateString) => {
         if (!dateString) return null;
@@ -17,6 +21,25 @@ const ApplicationForm = ({ userId, onSuccess }) => {
         
         return date.toISOString();
     };
+
+    useEffect(() => {
+        const fetchAvailable = async () => {
+            if (checkInDate && checkOutDate) {
+                setLoading(true);
+                try {
+                    const response = await axios.get(`https://localhost:7193/api/reservations/available-options`, {
+                        params: { startDate: dateToISO(checkInDate), endDate: dateToISO(checkOutDate) }
+                    });
+                    setAvailableOptions(response.data);
+                } catch (error) {
+                    console.error("Помилка завантаження кімнат", error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+        fetchAvailable();
+    }, [checkInDate, checkOutDate]);
 
     const inputStyle = {
         '& .MuiInputBase-root': {
@@ -63,11 +86,15 @@ const ApplicationForm = ({ userId, onSuccess }) => {
         }
     };
 
+    const currentRoomData = availableOptions.find(r => r.roomId === room);
+    const availableBeds = currentRoomData ? currentRoomData.availableBeds : [];
+    const isError = checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate);
+
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: '12px', overflow: 'hidden' }}>
                 {/* Заголовок */}
-                <Typography variant="h4" component="h1" sx={{ color: '#8b0000', fontWeight: 'bold', mb: 3 }}>
+                <Typography variant="h4" component="h1" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 3 }}>
                     Подача заявки
                 </Typography>
 
@@ -90,15 +117,22 @@ const ApplicationForm = ({ userId, onSuccess }) => {
 
                         {/* Обрати кімнату */}
                         <Typography variant="subtitle1" fontWeight="bold">Обрати кімнату</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="№ кімнати"
-                            size="small"
-                            sx={inputStyle}
-                            value={room}
-                            onChange={(e) => setRoom(e.target.value)}
-                        />
+                        <FormControl fullWidth size="small" sx={inputStyle}>
+                            <Select
+                                value={room}
+                                displayEmpty
+                                disabled={!checkInDate || !checkOutDate || loading}
+                                onChange={(e) => {
+                                    setRoom(e.target.value);
+                                    setPlace('');
+                                }}
+                            >
+                                <MenuItem value="" disabled>Оберіть кімнату</MenuItem>
+                                {availableOptions.map((opt) => (
+                                    <MenuItem key={opt.roomId} value={opt.roomId}>Кімната №{opt.roomNumber}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
                         {/* Причина бронювання */}
                         <Typography variant="subtitle1" fontWeight="bold">Причина бронювання</Typography>
@@ -128,19 +162,25 @@ const ApplicationForm = ({ userId, onSuccess }) => {
                             sx={inputStyle}
                             value={checkOutDate}
                             onChange={(e) => setCheckOutDate(e.target.value)}
+                            error={isError} // Робить поле червоним
+                            helperText={isError ? "Дата виселення має бути пізнішою за дату заселення" : ""}
                         />
 
                         {/* Обрати місце */}
                         <Typography variant="subtitle1" fontWeight="bold">Обрати місце</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            placeholder="№ місця"
-                            size="small"
-                            sx={inputStyle}
-                            value={place}
-                            onChange={(e) => setPlace(e.target.value)}
-                        />
+                        <FormControl fullWidth size="small" sx={inputStyle}>
+                            <Select
+                                value={place}
+                                displayEmpty
+                                disabled={!room}
+                                onChange={(e) => setPlace(e.target.value)}
+                            >
+                                <MenuItem value="" disabled>Оберіть місце</MenuItem>
+                                {availableBeds.map((bed) => (
+                                    <MenuItem key={bed.bedId} value={bed.bedId}>Місце №{bed.bedNumber}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
                 </Grid>
 
@@ -164,10 +204,13 @@ const ApplicationForm = ({ userId, onSuccess }) => {
                                     fontWeight: 'bold',
                                     padding: '10px 30px',
                                     borderRadius: '8px',
+                                    width: '100%',
                                 }}
                             >
                                 Подати заявку
                             </Button>
+
+                            <ReturnButton onClick={onBack} />
                         </Box>
                     </Grid>
 
@@ -216,4 +259,4 @@ const ApplicationForm = ({ userId, onSuccess }) => {
     );
 }
 
-export default ApplicationForm;
+export default ApplicationFormPage;

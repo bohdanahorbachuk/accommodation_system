@@ -2,20 +2,21 @@ import { useState } from 'react';
 import { CssBaseline, Box, Typography } from "@mui/material";
 
 import HomePage from "./src/pages/HomePage"; 
-import ApplicationForm from "./src/components/ApplicationForm"; 
-import ConfirmationPage from "./src/pages/ConfirmationPage"; 
-import StatusPage from "./src/pages/StatusPage"; 
-import ApplicationsList from "./src/components/ApplicationsList";
-import Header from "./src/components/Header"; 
-import AdminDashboard from "./src/components/AdminDashboard";
-import AdminApplicationDetails from "./src/pages/AdminApplicationDetails";
 import LoginPage from "./src/pages/LoginPage";
 import RegisterPage from "./src/pages/RegisterPage";
+import ApplicationForm from "./src/pages/UserPages/ApplicationFormPage"; 
+import ConfirmationPage from "./src/pages/UserPages/ConfirmationPage"; 
+import UserApplicationsListPage from "./src/pages/UserPages/UserApplicationsListPage";
+import UserApplicationDetailsPage from "./src/pages/UserPages/UserApplicationDetailsPage"; 
+import AdminApplicationsListPage from './src/pages/AdminPages/AdminApplicationsListPage';
+import AdminApplicationDetailsPage from "./src/pages/AdminPages/AdminApplicationDetailsPage";
+import Header from "./src/components/Header";
 import Footer from "./src/components/Footer";
 
 const USER_ROLES = {
     STUDENT: 1,
     ADMIN: 2,
+    GUEST: 3
 };
 
 // Всі можливі стани сторінок
@@ -156,6 +157,7 @@ function App() {
             break;
         case PAGE_STATES.FORM:
             PageContent = <ApplicationForm
+                            onBack={handleBackToReservationsList}
                             userId={authData?.userId}
                             onSuccess={handleFormSubmit} />;
             break;
@@ -163,28 +165,28 @@ function App() {
             PageContent = <ConfirmationPage onViewStatus={handleViewStatus} />;
             break;
         case PAGE_STATES.STATUS:
-            PageContent = <StatusPage
+            PageContent = <UserApplicationDetailsPage
                 reservationId={currentReservationId}
                 onBack={handleBackToReservationsList}
             />;
             break;
         case PAGE_STATES.LIST:
-            PageContent = <ApplicationsList 
+            PageContent = <UserApplicationsListPage 
                             userId={authData?.userId}
                             onNewApplication={handleNewApplication} 
                             onStatusView={handleViewStatus} 
                         />;
             break;
         case PAGE_STATES.ADMIN_DASHBOARD:
-            PageContent = <AdminDashboard onStatusView={handleViewAdminApplicationDetails} />;
+            PageContent = <AdminApplicationsListPage onStatusView={handleViewAdminApplicationDetails} />;
             break;
         case PAGE_STATES.ADMIN_APPLICATION_DETAILS:
-            PageContent = <AdminApplicationDetails 
+            PageContent = <AdminApplicationDetailsPage 
                             reservationId={currentReservationId} 
                             onBack={handleBackToAdminDashboard}
                           />;
             break;
-        case PAGE_STATES.FAQ: // НОВИЙ CASE ДЛЯ FOOTER
+        case PAGE_STATES.FAQ:
             PageContent = <Typography variant="h3" sx={{ m: 5, textAlign: 'center' }}>Поширені запитання (FAQ) - TODO</Typography>;
             break;
         default:
@@ -195,7 +197,7 @@ function App() {
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <CssBaseline /> 
 
-            {/* 1. HEADER (Надсилаємо лише потрібні пропси) */}
+            {/* HEADER  */}
             <Header 
                 isLoggedIn={isLoggedIn}
                 currentPage={currentPage}
@@ -205,14 +207,14 @@ function App() {
                 onHomeClick={handleViewHome}
             />
 
-            {/* 2. ОСНОВНИЙ КОНТЕНТ (Займає весь простір) */}
+            {/* ОСНОВНИЙ КОНТЕНТ */}
             <Box component="main" sx={{ flexGrow: 1 }}>
                 {PageContent}
             </Box>
 
-            {/* 3. FOOTER */}
+            {/* FOOTER */}
             <Footer 
-                onFaqClick={handleFaqClick} // Обробка кліку на "Поширені запитання"
+                onFaqClick={handleFaqClick}
             />
         </Box>
     );

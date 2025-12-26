@@ -1,12 +1,23 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, TextField, Button, Link } from '@mui/material';
+import { Container, Grid, Typography, Box, TextField, Button, Link, Paper } from '@mui/material';
 import HomeIllustration from '../components/HomeIllustration';
 
 const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
     const darkBlue = '#001f3f'; // Темно-синій для кнопок
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const inputStyle = {
+        '& .MuiInputBase-root': {
+            borderRadius: '8px',
+            backgroundColor: '#f0f0f0', // Світло-сірий фон
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#f0f0f0', // Прибрати видимий бордер, якщо він стандартний
+        },
+        marginBottom: 2, // Відступ знизу для кожного поля
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -18,8 +29,6 @@ const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
 
         try {
             var response = await axios.post('https://localhost:7193/api/auth/login', postData);
-
-            console.log(response.data);
 
             const responseData = {
                 accessToken: response.data.accessToken,
@@ -39,94 +48,77 @@ const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
     };
 
     return (
-        <Container maxWidth="lg" sx={{ mt: 8, mb: 8, minHeight: '70vh' }}>
-            <Grid container spacing={4} alignItems="center">
-                {/* Ліва частина: Форма Входу */}
-                <Grid item xs={12} md={6}>
-                    <Box 
+        <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
+            <Paper elevation={3} sx={{ p: 4, borderRadius: '12px', overflow: 'hidden' }}>
+                <Typography variant="h4" component="h1" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 3 }}>
+                    Увійти
+                </Typography>
+
+                <Grid container spacing={4} columns={{ xs: 2 }}>
+                    {/* Ліва колонка */}
+                    <Grid size={{ xs: 1 }}>
+            
+                    <Typography variant="subtitle1" fontWeight="bold">Email</Typography>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        sx={inputStyle}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+
+
+                    <Typography variant="subtitle1" fontWeight="bold">Пароль</Typography>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        type ="password"
+                        sx={inputStyle}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Link 
+                        href="#" 
+                        onClick={onForgotPassword} 
+                        variant="body2" 
                         sx={{ 
-                            pr: { md: 4 }, 
-                            bgcolor: 'white', 
-                            p: 4, 
-                            borderRadius: '12px', 
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.05)' 
+                            color: darkBlue, 
+                            textDecoration: 'none', 
+                            '&:hover': { textDecoration: 'underline' },
+                            mb: 3, 
+                            display: 'block' 
                         }}
                     >
-                        <Typography 
-                            variant="h4" 
-                            component="h1" 
-                            gutterBottom
-                            sx={{ 
-                                color: darkBlue, 
-                                fontWeight: 'bold', 
-                                mb: 4 
-                            }}
-                        >
-                            Увійти
-                        </Typography>
-                        
-                        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                sx={{ mb: 2 }}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Пароль"
-                                variant="outlined"
-                                type="password"
-                                margin="normal"
-                                required
-                                sx={{ mb: 3 }}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <Link 
-                                href="#" 
-                                onClick={onForgotPassword} 
-                                variant="body2" 
-                                sx={{ 
-                                    color: darkBlue, 
-                                    textDecoration: 'none', 
-                                    '&:hover': { textDecoration: 'underline' },
-                                    mb: 3, 
-                                    display: 'block' 
-                                }}
-                            >
-                                Забули пароль?
-                            </Link>
-                            <Button
-                                fullWidth
-                                type="submit"
-                                variant="contained"
-                                size="large"
-                                sx={{
-                                    backgroundColor: darkBlue,
-                                    '&:hover': { backgroundColor: '#003366' },
-                                    fontWeight: 'bold',
-                                    borderRadius: '8px',
-                                    textTransform: 'none',
-                                    py: 1.5,
-                                    mt: 2,
-                                }}
-                            >
-                                Вхід
-                            </Button>
-                        </Box>
-                    </Box>
-                </Grid>
+                        Забули пароль?
+                    </Link>
+                    <Button
+                        fullWidth
+                            type="submit"
+                            onClick={handleSubmit}
+                        variant="contained"
+                        size="large"
+                        sx={{
+                            backgroundColor: darkBlue,
+                            '&:hover': { backgroundColor: '#003366' },
+                            fontWeight: 'bold',
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            py: 1.5,
+                            mt: 2,
+                        }}
+                    >
+                        Вхід
+                    </Button>
+                    </Grid>
 
-                {/* Права частина: Ілюстрація */}
-                <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <HomeIllustration />
+                    {/* Права частина: Ілюстрація */}
+                    <Grid size={{ xs: 1 }} >
+                        <HomeIllustration />
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Paper>
         </Container>
     );
 };

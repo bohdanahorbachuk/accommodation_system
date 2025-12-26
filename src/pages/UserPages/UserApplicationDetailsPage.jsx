@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, Paper, Button, CircularProgress } from '@mui/material';
+import { Container, Grid, Typography, Box, Paper, Button, CircularProgress, Chip, Tooltip } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
-import CheckIcon from '@mui/icons-material/Check';
+import ReturnButton from '../../components/ReturnButton';
+import { formatDate } from '../../utils/dateUtils';
+import { getStatusConfig } from '../../utils/statusUtils';
 
-const StatusPage = ({ reservationId, onBack }) => {
+const UserApplicationDetailsPage = ({ reservationId, onBack }) => {
     const [applicationData, setApplicationData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -44,14 +46,7 @@ const StatusPage = ({ reservationId, onBack }) => {
         return <Typography color="error" align="center" sx={{ mt: 4 }}>{error}</Typography>;
     }
 
-    let statusColor;
-    if (applicationData.reservationStatusName === 'Прийнято') {
-        statusColor = '#4caf50';
-    } else if (applicationData.reservationStatusName === 'Створено') {
-        statusColor = '#ff9800';
-    } else {
-        statusColor = '#f44336';
-    }
+    const statusConfig = getStatusConfig(applicationData.reservationStatusName);
 
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
@@ -73,7 +68,7 @@ const StatusPage = ({ reservationId, onBack }) => {
 
                         {/* Інформація про кімнату та телефон */}
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
-                            Кімната № {applicationData.roomId}, місце № {applicationData.bedId}
+                            Кімната № {applicationData.roomNumber}, місце № {applicationData.bedNumber}
                         </Typography>
                         <Typography variant="body1" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
                             {applicationData.phoneNumber}
@@ -84,7 +79,7 @@ const StatusPage = ({ reservationId, onBack }) => {
                             Дата поселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.reservationStartDate}
+                            {formatDate(applicationData.reservationStartDate)}
                         </Typography>
 
                          {/* Дата виселення */}
@@ -92,7 +87,7 @@ const StatusPage = ({ reservationId, onBack }) => {
                             Дата виселення
                         </Typography>
                         <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
-                            {applicationData.reservationEndDate}
+                            {formatDate(applicationData.reservationEndDate)}
                         </Typography>
 
                         <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
@@ -100,18 +95,45 @@ const StatusPage = ({ reservationId, onBack }) => {
                         </Typography>
                         
                         {/* Статус */}
-                        <Box sx={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            bgcolor: statusColor,
-                            color: 'white',
-                            p: '4px 12px',
-                            borderRadius: '4px',
-                            fontWeight: 'bold',
-                            mb: 3
-                        }}>
-                            <CheckIcon sx={{ fontSize: 18, mr: 0.5 }} />
-                            {applicationData.reservationStatusName}
+                        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-start' }}>
+                            <Tooltip 
+                                title={applicationData.adminComment} 
+                                arrow 
+                                placement="right"
+                                enterDelay={150}
+                                slotProps={{
+                                    tooltip: {
+                                    sx: {
+                                        bgcolor: statusConfig.color,
+                                        color: '#ffffff',
+                                        fontSize: '0.7rem',
+                                        boxShadow: 3, 
+                                        p: 1.5, 
+                                        '& .MuiTooltip-arrow': {
+                                        color: statusConfig.color,
+                                        },
+                                    },
+                                    },
+                                }}
+                            >
+                                <Chip
+                                    icon={statusConfig.icon}
+                                    label={applicationData.reservationStatusName}
+                                    sx={{
+                                        bgcolor: statusConfig.bgcolor,
+                                        color: statusConfig.color,
+                                        fontWeight: 'bold',
+                                        border: `1px solid ${statusConfig.color}`,
+                                        fontSize: '1.1rem',
+                                        height: 28,
+                                        '& .MuiChip-icon': {
+                                            color: statusConfig.color,
+                                            fontSize: 20
+                                        }
+                                    }}
+                                    size="small"
+                                />
+                            </Tooltip>
                         </Box>
 
                         {/* Кнопка завантаження PDF */}
@@ -133,27 +155,7 @@ const StatusPage = ({ reservationId, onBack }) => {
                             Завантажити підтвердження про поселення (PDF)
                         </Button>
 
-                        {/* Кнопка повернення */}
-                        <Button
-                            variant="outlined"
-                            onClick={onBack}
-                            sx={{
-                                mt: 2,
-                                borderColor: '#001f3f',
-                                color: '#001f3f',
-                                '&:hover': {
-                                    borderColor: '#003366',
-                                    bgcolor: 'rgba(0, 31, 63, 0.04)'
-                                },
-                                fontWeight: 'bold',
-                                py: 1,
-                                borderRadius: '8px',
-                                textTransform: 'none',
-                                width: '100%'
-                            }}
-                        >
-                            Повернутися до списку заявок
-                        </Button>
+                        <ReturnButton onClick={onBack} />
                     </Paper>
                 </Grid>
 
@@ -169,4 +171,4 @@ const StatusPage = ({ reservationId, onBack }) => {
     );
 }
 
-export default StatusPage;
+export default UserApplicationDetailsPage;
