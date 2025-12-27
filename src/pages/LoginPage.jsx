@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, TextField, Button, Link, Paper } from '@mui/material';
+import { Container, Grid, Typography, TextField, Button, Link, Paper, InputAdornment, IconButton } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import HomeIllustration from '../components/HomeIllustration';
 
-const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
+const LoginPage = ({ onLoginSuccess, onForgotPassword }) => {
     const darkBlue = '#001f3f'; // Темно-синій для кнопок
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const inputStyle = {
         '& .MuiInputBase-root': {
@@ -74,10 +78,23 @@ const LoginPage = ({ onLoginSuccess, onForgotPassword, onRegisterClick }) => {
                         fullWidth
                         variant="outlined"
                         size="small"
-                        type ="password"
+                        type={showPassword ? 'text' : 'password'}
                         sx={inputStyle}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => setShowPassword((show) => !show)}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     <Link 
                         href="#" 

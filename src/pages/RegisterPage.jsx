@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Box, TextField, Button, MenuItem, Paper } from '@mui/material';
+import { Container, Grid, Typography, Box, TextField, Button, MenuItem, Paper, InputAdornment, IconButton } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const RegisterPage = ({ onRegisterSuccess }) => {
     const darkBlue = '#001f3f'; // Темно-синій для кнопок
@@ -13,6 +15,9 @@ const RegisterPage = ({ onRegisterSuccess }) => {
     const [role, setRole] = useState(1); // Встановлюємо дефолтну роль на Студент
     const [adminIdentifier, setAdminIdentifier] = useState('');
     const [error, setError] = useState('');
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmedPassword, setShowConfirmedPassword] = useState(false);
 
     const roles = [
         { id: 1, value: 'student', label: 'Студент' },
@@ -150,10 +155,23 @@ const RegisterPage = ({ onRegisterSuccess }) => {
                             fullWidth
                             variant="outlined"
                             size="small"
-                            type ="password"
+                            type={showPassword ? 'text' : 'password'}
                             sx={inputStyle}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={() => setShowPassword((show) => !show)}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
 
                         {/* Обрати місце */}
@@ -162,10 +180,23 @@ const RegisterPage = ({ onRegisterSuccess }) => {
                             fullWidth
                             variant="outlined"
                             size="small"
-                            type="password"
+                            type={showConfirmedPassword ? 'text' : 'password'}
                             sx={inputStyle}
                             value={confirmedPassword}
                             onChange={(e) => setConfirmedPassword(e.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={() => setShowConfirmedPassword((show) => !show)}
+                                            edge="end"
+                                        >
+                                            {showConfirmedPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
 
                         <Typography variant="subtitle1" fontWeight="bold">Роль</Typography>

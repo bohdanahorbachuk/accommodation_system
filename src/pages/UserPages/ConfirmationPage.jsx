@@ -12,7 +12,7 @@ const ConfirmationPage = ({ onViewStatus }) => {
                             Вітаємо!
                         </Typography>
                         <Typography variant="h5" component="p" sx={{ color: '#001f3f', fontWeight: 'medium', mb: 3 }}>
-                            Вашу заявку на тимчасове поселення в гуртожиток прийнято!
+                            Вашу заявку відправлено адміністраторам на розгляд!
                         </Typography>
                         
                         {/* Посилання, що перемикає стан на 'status' */}
