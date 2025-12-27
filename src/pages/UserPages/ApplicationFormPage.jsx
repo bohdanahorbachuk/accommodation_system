@@ -1,6 +1,6 @@
 import { useState , useEffect} from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, TextField, Button, Box, Paper, FormControl, Select, MenuItem } from '@mui/material';
+import { Container, Grid, Typography, TextField, Button, Box, Paper, FormControl, Select, MenuItem, Alert, Snackbar } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import ReturnButton from '../../components/ReturnButton';
 
@@ -13,6 +13,9 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
 
     const [availableOptions, setAvailableOptions] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
+    const [userReservations, setUserReservations] = useState([]);
 
     const dateToISO = (dateString) => {
         if (!dateString) return null;
@@ -25,12 +28,18 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
     useEffect(() => {
         const fetchAvailable = async () => {
             if (checkInDate && checkOutDate) {
+                if (new Date(checkInDate) >= new Date(checkOutDate)) {
+                    setAvailableOptions([]);
+                    return;
+                }
+
                 setLoading(true);
                 try {
                     const response = await axios.get(`https://localhost:7193/api/reservations/available-options`, {
                         params: { startDate: dateToISO(checkInDate), endDate: dateToISO(checkOutDate) }
                     });
                     setAvailableOptions(response.data);
+                    setHasSearched(true);
                 } catch (error) {
                     console.error("Помилка завантаження кімнат", error);
                 } finally {
@@ -40,6 +49,44 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
         };
         fetchAvailable();
     }, [checkInDate, checkOutDate]);
+
+
+    useEffect(() => {
+        const fetchUserReservations = async () => {
+            try {
+                const response = await axios.get(`https://localhost:7193/api/reservations?userId=${userId}`);
+                setUserReservations(response.data);
+            } catch (error) {
+                console.error("Помилка завантаження існуючих заявок", error);
+            }
+        };
+        if (userId) fetchUserReservations();
+    }, [userId]);
+
+    const isOverlapping = () => {
+        if (!checkInDate || !checkOutDate) return false;
+
+        const newStart = new Date(checkInDate);
+        const newEnd = new Date(checkOutDate);
+
+        return userReservations.some(res => {
+            const existingStart = new Date(res.reservationStartDate);
+            const existingEnd = new Date(res.reservationEndDate);
+
+            return newStart <= existingEnd && newEnd >= existingStart;
+        });
+    };
+
+    const hasOverlapError = isOverlapping();
+
+    const checkIsOffHours = () => {
+        const now = new Date();
+        const hour = now.getHours();
+
+        return hour < 9 || hour >= 18;
+    };
+
+    const isOffHours = checkIsOffHours();
 
     const inputStyle = {
         '& .MuiInputBase-root': {
@@ -53,6 +100,11 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
     };
     
     const handleSubmit = async (e) => {
+        if (hasOverlapError) {
+            setOpenAlert(true);
+            return;
+        }
+
         const postData = {
             userId: userId,
             roomId: room,
@@ -88,15 +140,41 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
 
     const currentRoomData = availableOptions.find(r => r.roomId === room);
     const availableBeds = currentRoomData ? currentRoomData.availableBeds : [];
-    const isError = checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate);
+    const isDateError = checkInDate && checkOutDate && new Date(checkInDate) >= new Date(checkOutDate);
+
+    const noOptionsAvailable = hasSearched && !loading && availableOptions.length === 0 && !isDateError && checkInDate && checkOutDate;
 
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: '12px', overflow: 'hidden' }}>
+                <Snackbar 
+                    open={openAlert} 
+                    autoHideDuration={6000} 
+                    onClose={() => setOpenAlert(false)}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                >
+                    <Alert onClose={() => setOpenAlert(false)} severity="error" sx={{ width: '100%' }}>
+                        Ви вже маєте заявку на цей період!
+                    </Alert>
+                </Snackbar>
+
                 {/* Заголовок */}
                 <Typography variant="h4" component="h1" sx={{ color: '#001f3f', fontWeight: 'bold', mb: 3 }}>
                     Подача заявки
                 </Typography>
+
+                {isOffHours && (
+                    <Alert severity="info" sx={{ mb: 2, borderRadius: '8px' }}>
+                        Зараз неробочий час. Ваша заявка буде розглянута 
+                        <strong> завтра після 09:00</strong>.
+                    </Alert>
+                )}
+
+                {noOptionsAvailable && (
+                    <Alert severity="warning" sx={{ mb: 3, borderRadius: '8px' }}>
+                        На обрані дати немає вільних місць. Будь ласка, оберіть інший період.
+                    </Alert>
+                )}
 
                 <Grid container spacing={4} columns={{ xs: 2 }}>
                     {/* Ліва колонка */}
@@ -112,7 +190,11 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
                             type="date"
                             sx={inputStyle}
                             value={checkInDate}
-                            onChange={(e) => setCheckInDate(e.target.value)}
+                            onChange={(e) => {
+                                setCheckInDate(e.target.value);
+                                setRoom('');
+                                setPlace('');
+                            }}
                         />
 
                         {/* Обрати кімнату */}
@@ -121,7 +203,7 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
                             <Select
                                 value={room}
                                 displayEmpty
-                                disabled={!checkInDate || !checkOutDate || loading}
+                                disabled={!checkInDate || !checkOutDate || loading || availableOptions.length === 0}
                                 onChange={(e) => {
                                     setRoom(e.target.value);
                                     setPlace('');
@@ -162,8 +244,8 @@ const ApplicationFormPage = ({ userId, onSuccess, onBack }) => {
                             sx={inputStyle}
                             value={checkOutDate}
                             onChange={(e) => setCheckOutDate(e.target.value)}
-                            error={isError} // Робить поле червоним
-                            helperText={isError ? "Дата виселення має бути пізнішою за дату заселення" : ""}
+                            error={isDateError} // Робить поле червоним
+                            helperText={isDateError ? "Дата виселення має бути пізнішою за дату заселення" : ""}
                         />
 
                         {/* Обрати місце */}

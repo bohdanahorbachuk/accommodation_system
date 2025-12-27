@@ -135,15 +135,22 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                 <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
                     Кімната № {applicationData.roomNumber}, місце № {applicationData.bedNumber}
                 </Typography>
-                <Typography variant="body1" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
                     {applicationData.phoneNumber}
+                </Typography>
+
+                <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
+                    Причина бронювання
+                </Typography>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
+                    {applicationData.reason}
                 </Typography>
 
                 {/* Дата поселення */}
                 <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
                     Дата поселення
                 </Typography>
-                <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
                     {formatDate(applicationData.reservationStartDate)}
                 </Typography>
 
@@ -151,7 +158,7 @@ const AdminApplicationDetailsPage = ({ reservationId, onBack }) => {
                 <Typography variant="body1" sx={{ color: '#001f3f', mb: 0.5 }}>
                     Дата виселення
                 </Typography>
-                <Typography variant="h5" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: '#001f3f', mb: 2 }}>
                     {formatDate(applicationData.reservationEndDate)}
                 </Typography>
 

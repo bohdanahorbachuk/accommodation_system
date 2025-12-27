@@ -146,13 +146,11 @@ function App() {
             PageContent = <LoginPage 
                             onLoginSuccess={handleLoginSuccess} 
                             onForgotPassword={handleForgotPassword}
-                            onRegisterClick={handleRegisterClick}
                           />;
             break;
         case PAGE_STATES.REGISTER:
             PageContent = <RegisterPage 
-                            onRegisterSuccess={handleRegisterSuccess} 
-                            onLoginClick={handleLoginClick}
+                            onRegisterSuccess={handleRegisterSuccess}
                           />;
             break;
         case PAGE_STATES.FORM:
