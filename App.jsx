@@ -12,6 +12,7 @@ import AdminApplicationsListPage from './src/pages/AdminPages/AdminApplicationsL
 import AdminApplicationDetailsPage from "./src/pages/AdminPages/AdminApplicationDetailsPage";
 import Header from "./src/components/Header";
 import Footer from "./src/components/Footer";
+import FaqPage from "./src/pages/FaqPage"; 
 
 const USER_ROLES = {
     STUDENT: 1,
@@ -40,7 +41,7 @@ function App() {
     const isLoggedIn = !!authData; 
     const [currentPage, setCurrentPage] = useState(PAGE_STATES.HOME);
     const [currentReservationId, setCurrentReservationId] = useState(null);
-    
+
     // --- Функції перемикання ---
     
     const handleViewHome = () => {
@@ -135,7 +136,6 @@ function App() {
         setCurrentPage(PAGE_STATES.FAQ);
     };
 
-
     let PageContent;
 
     switch (currentPage) {
@@ -185,7 +185,8 @@ function App() {
                           />;
             break;
         case PAGE_STATES.FAQ:
-            PageContent = <Typography variant="h3" sx={{ m: 5, textAlign: 'center' }}>Поширені запитання (FAQ) - TODO</Typography>;
+            // PageContent = <Typography variant="h3" sx={{ m: 5, textAlign: 'center' }}>Поширені запитання</Typography>;
+            PageContent = <FaqPage />;
             break;
         default:
             PageContent = <HomePage onStartApplication={handleRegisterClick} />;
